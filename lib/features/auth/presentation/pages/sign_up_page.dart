@@ -8,9 +8,9 @@ class SignUpPage extends StatelessWidget {
   final TextEditingController lastNameController =
   TextEditingController(text: "last name");
   final TextEditingController emailController =
-  TextEditingController(text: "email122@gmail.com");
+  TextEditingController(text: "ahmed@gmail.com");
   final TextEditingController passwordController =
-  TextEditingController(text: "password name");
+  TextEditingController(text: "ahmed1998");
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,10 @@ class SignUpPage extends StatelessWidget {
           // Handle success and failure states
           if (state is AuthConfirmationCodeSent) {
             // Navigate to confirmation page on successful sign-up
-            Navigator.pushNamed(context, '/confirm');
+            Navigator.pushNamed(context, '/confirm', arguments: {
+              'email': emailController.text,
+              'password': passwordController.text,
+            });
           } else if (state is AuthFailure) {
             // Show error message using a SnackBar
             ScaffoldMessenger.of(context).showSnackBar(
@@ -72,6 +75,13 @@ class SignUpPage extends StatelessWidget {
                     child: Text('Sign Up'),
                   );
                 },
+              ),
+              SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/signin');
+                },
+                child: Text('Already have an account? Sign In'),
               ),
             ],
           ),

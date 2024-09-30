@@ -8,8 +8,9 @@ class SplashPage extends StatelessWidget {
     });
     return Scaffold(
       body: Center(
-        child: Text('Islamic Dating App'),
-      ),
+          child: CircularProgressIndicator(
+        color: Colors.blueAccent,
+      )),
     );
   }
 }

@@ -1,4 +1,6 @@
 // lib/features/auth/data/data_sources/auth_remote_data_source_impl.dart
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../models/user_model.dart';
 import '../../../../core/network/http_client.dart';
@@ -7,6 +9,8 @@ import '../errors/AuthException.dart';
 abstract class AuthRemoteDataSource {
   Future<void> signUp(
       String firstName, String lastName, String email, String password);
+
+  Future<String> signIn(String email, String password);
 
   Future<void> confirmAccount(String code);
 
@@ -103,13 +107,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+
+  @override
+  Future<String> signIn(String email, String password) async {
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/login/',
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if (!_isSuccessStatusCode(response.statusCode)) {
+        throw AuthException('Login failed');
+      }
+      Map<String, dynamic> responseMap = jsonDecode(response.toString());
+      return responseMap['token'];
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+
+  }
+
   bool _isSuccessStatusCode(int? statusCode) {
     return statusCode != null && (statusCode >= 200 && statusCode < 300);
   }
 
   Exception _handleError(DioError e) {
     if (e.response != null && e.response?.data is Map<String, dynamic>) {
-      print('Hello');
       // Server error with a response and proper structure
       final Map<String, dynamic> errorData = e.response!.data;
 
@@ -124,7 +150,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return AuthException(e.response?.data);
     } else {
       // Network or other types of Dio errors
-      return AuthException('Signup failed: ${e.message}');
+      return AuthException('Failed: ${e.message}');
     }
   }
+
 }

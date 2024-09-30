@@ -13,7 +13,13 @@ class AppRouter {
       case '/':
         return MaterialPageRoute(builder: (_) => SplashPage());
       case '/confirm':
-        return MaterialPageRoute(builder: (_) => ConfirmCodePage());
+        final args = settings.arguments as Map<String, String>;
+        return MaterialPageRoute(
+          builder: (context) => ConfirmCodePage(
+            email: args['email'] ?? '',
+            password: args['password'] ?? '',
+          ),
+        );
       case '/profileSetup':
         return MaterialPageRoute(builder: (_) => ProfileSetupPage());
       case '/signin':

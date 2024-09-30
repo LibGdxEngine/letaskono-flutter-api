@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:letaskono_flutter/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:letaskono_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:letaskono_flutter/features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/auth/domain/use_cases/sign_in.dart';
 import '../network/http_client.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/use_cases/sign_up.dart';
@@ -33,6 +34,7 @@ Future<void> init() async {
 
   // Use Cases
   sl.registerLazySingleton(() => SignUp(sl()));
+  sl.registerLazySingleton(() => SignIn(sl()));
   sl.registerLazySingleton(() => ConfirmAccount(sl()));
   sl.registerLazySingleton(() => SubmitProfile(sl()));
 

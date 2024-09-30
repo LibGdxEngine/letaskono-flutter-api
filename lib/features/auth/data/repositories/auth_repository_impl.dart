@@ -40,4 +40,9 @@ class AuthRepositoryImpl implements AuthRepository {
     // Implement the logic for checking if the user is activated
     return true; // Replace with actual logic
   }
+
+  @override
+  Future<String> signIn(String email, String password) async {
+    return await remoteDataSource.signIn(email, password);
+  }
 }

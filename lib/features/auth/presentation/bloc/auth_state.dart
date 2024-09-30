@@ -17,6 +17,8 @@ class AuthFailure extends AuthState {
   AuthFailure(this.message);
 }
 
+class AuthSuccess extends AuthState {}
+
 class AuthConfirmationCodeSent extends AuthState {}
 
 class AuthProfileSetup extends AuthState {}
