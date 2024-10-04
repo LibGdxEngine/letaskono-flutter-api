@@ -26,8 +26,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             event.firstName, event.lastName, event.email, event.password);
         emit(AuthConfirmationCodeSent()); // Emit success state
       } catch (error) {
-        emit(AuthFailure(
-            error.toString())); // Emit failure state with error message
+        if (error.toString() == "User already exists") {
+          emit(AuthConfirmationCodeSent()); // Emit success state
+        } else {
+          emit(AuthFailure(
+              error.toString())); // Emit failure state with error message
+        }
       }
     });
 

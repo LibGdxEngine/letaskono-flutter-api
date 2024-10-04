@@ -4,10 +4,10 @@ class HttpClient {
   final Dio dio;
 
   HttpClient({required this.dio}) {
-    dio.options.baseUrl = 'http://172.26.192.1:8000/'; // Set your API base URL
-    dio.options.connectTimeout = Duration(seconds: 5); // 5 seconds timeout
-    dio.options.receiveTimeout = Duration(seconds: 3);
-    dio.options.sendTimeout = Duration(seconds: 4);
+    dio.options.baseUrl = 'http:// 172.25.64.1:8000/'; // Set your API base URL
+    dio.options.connectTimeout = const Duration(seconds: 5); // 5 seconds timeout
+    dio.options.receiveTimeout = const Duration(seconds: 3);
+    dio.options.sendTimeout = const Duration(seconds: 4);
 
     // Set default headers
     dio.options.headers = {

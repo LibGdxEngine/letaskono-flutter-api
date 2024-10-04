@@ -5,16 +5,11 @@ import '../../domain/entities/AuthEntity.dart';
   
 class UserModel extends AuthEntity {
   const UserModel({
-    required String id,
-    required String firstName,
-    required String lastName,
-    required String email,
-  }) : super(
-    id: id,
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-  );
+    required super.id,
+    required super.firstName,
+    required super.lastName,
+    required super.email,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

@@ -12,10 +12,12 @@ class SignUpPage extends StatelessWidget {
   final TextEditingController passwordController =
   TextEditingController(text: "ahmed1998");
 
+  SignUpPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           // Handle success and failure states
@@ -39,26 +41,26 @@ class SignUpPage extends StatelessWidget {
             children: [
               TextField(
                 controller: firstNameController,
-                decoration: InputDecoration(hintText: 'First Name'),
+                decoration: const InputDecoration(hintText: 'First Name'),
               ),
               TextField(
                 controller: lastNameController,
-                decoration: InputDecoration(hintText: 'Last Name'),
+                decoration: const InputDecoration(hintText: 'Last Name'),
               ),
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(hintText: 'Email'),
+                decoration: const InputDecoration(hintText: 'Email'),
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(hintText: 'Password'),
+                decoration: const InputDecoration(hintText: 'Password'),
                 obscureText: true,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                    return CircularProgressIndicator(); // Show loading indicator during sign-up
+                    return const CircularProgressIndicator(); // Show loading indicator during sign-up
                   }
                   return ElevatedButton(
                     onPressed: () {
@@ -72,16 +74,16 @@ class SignUpPage extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Text('Sign Up'),
+                    child: const Text('Sign Up'),
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/signin');
                 },
-                child: Text('Already have an account? Sign In'),
+                child: const Text('Already have an account? Sign In'),
               ),
             ],
           ),

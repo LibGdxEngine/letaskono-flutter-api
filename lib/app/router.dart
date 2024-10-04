@@ -11,7 +11,7 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => SplashPage());
+        return MaterialPageRoute(builder: (_) => const SplashPage());
       case '/confirm':
         final args = settings.arguments as Map<String, String>;
         return MaterialPageRoute(
@@ -21,20 +21,20 @@ class AppRouter {
           ),
         );
       case '/profileSetup':
-        return MaterialPageRoute(builder: (_) => ProfileSetupPage());
+        return MaterialPageRoute(builder: (_) => const ProfileSetupPage());
       case '/signin':
-        return MaterialPageRoute(builder: (_) => SignInPage());
+        return MaterialPageRoute(builder: (_) => const SignInPage());
       case '/signup':
         return MaterialPageRoute(builder: (_) => SignUpPage());
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomePage());
+        return MaterialPageRoute(builder: (_) => const HomePage());
       case '/detail':
         final int? userId = settings.arguments as int?;
         return MaterialPageRoute(
           builder: (_) => DetailPage(userId: userId),
         );
       default:
-        return MaterialPageRoute(builder: (_) => SplashPage());
+        return MaterialPageRoute(builder: (_) => const SplashPage());
     }
   }
 }

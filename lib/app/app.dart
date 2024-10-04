@@ -9,15 +9,17 @@ void main() async {
   Bloc.observer = AppBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await di.init(); // Initialize Dependency Injection
-  runApp(IslamicDatingApp());
+  runApp(const IslamicDatingApp());
 }
 
 class IslamicDatingApp extends StatelessWidget {
+  const IslamicDatingApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(),
-      child: MaterialApp(
+      child: const MaterialApp(
         title: 'Islamic Dating App',
         onGenerateRoute: AppRouter.generateRoute,
       ),

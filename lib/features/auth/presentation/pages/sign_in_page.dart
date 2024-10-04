@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -53,7 +55,7 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: const InputDecoration(hintText: 'Password'),
                 obscureText: true, // Hide the password input
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   if (state is AuthLoading){

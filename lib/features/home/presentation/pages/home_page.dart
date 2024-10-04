@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:letaskono_flutter/features/home/presentation/pages/detail_page.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      appBar: AppBar(title: const Text('Home')),
       body: ListView.builder(
         itemCount: 10, // Replace with dynamic data later
         itemBuilder: (context, index) {
@@ -14,7 +15,7 @@ class HomePage extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(
                 context,
-                '/detail',
+                '/profileSetup',
                 arguments: index, // Ensure the 'index' is passed correctly here
               );
             },

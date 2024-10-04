@@ -77,7 +77,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.statusCode != 200) {
         throw AuthException('Failed to submit profile');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response != null) {
         throw AuthException(
             'Profile submission failed: ${e.response?.data['message']}');
@@ -97,7 +97,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else {
         throw AuthException('Failed to load user data');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response != null) {
         throw AuthException(
             'Failed to get user data: ${e.response?.data['message']}');
@@ -134,7 +134,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return statusCode != null && (statusCode >= 200 && statusCode < 300);
   }
 
-  Exception _handleError(DioError e) {
+  Exception _handleError(DioException e) {
     if (e.response != null && e.response?.data is Map<String, dynamic>) {
       // Server error with a response and proper structure
       final Map<String, dynamic> errorData = e.response!.data;
@@ -143,9 +143,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final dynamic firstErrorMessages = errorData[firstKey];
       if (firstErrorMessages is String) {
-        return AuthException('${firstKey}: ${firstErrorMessages}');
+        return AuthException('$firstKey: $firstErrorMessages');
       } else if (firstErrorMessages is List<dynamic>) {
-        return AuthException('${firstKey}: ${firstErrorMessages.first}');
+        return AuthException('$firstKey: ${firstErrorMessages.first}');
       }
       return AuthException(e.response?.data);
     } else {

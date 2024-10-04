@@ -8,22 +8,21 @@ class ConfirmCodePage extends StatelessWidget {
   final String? email;
   final String? password;
 
-  ConfirmCodePage({Key? key, required this.email, required this.password})
-      : super(key: key) {
+  ConfirmCodePage({super.key, required this.email, required this.password}) {
     codeController = TextEditingController();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Confirm Your Account')),
+      appBar: AppBar(title: const Text('Confirm Your Account')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthProfileSetup) {
             BlocProvider.of<AuthBloc>(context)
                 .add(SignInEvent(email!, password!));
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Account confirmed, enter your data")),
+              const SnackBar(content: Text("Account confirmed, enter your data")),
             );
             Navigator.pushNamedAndRemoveUntil(
                 context, '/profileSetup', (route) => false);
@@ -34,16 +33,16 @@ class ConfirmCodePage extends StatelessWidget {
           }
         },
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
                 controller: codeController,
                 decoration:
-                    InputDecoration(hintText: 'Enter Confirmation Code'),
+                    const InputDecoration(hintText: 'Enter Confirmation Code'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   // Handle code confirmation logic
@@ -51,7 +50,7 @@ class ConfirmCodePage extends StatelessWidget {
                       .add(ConfirmCodeEvent(codeController.text));
                   // Navigator.pushNamed(context, '/profileSetup');
                 },
-                child: Text('Confirm'),
+                child: const Text('Confirm'),
               ),
             ],
           ),
