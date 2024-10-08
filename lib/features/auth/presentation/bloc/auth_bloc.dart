@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart';
 import '../../domain/entities/AuthEntity.dart';
 import '../../domain/use_cases/sign_in.dart';
 import '../../domain/use_cases/sign_up.dart';
@@ -25,12 +28,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await signUpUseCase.call(
             event.firstName, event.lastName, event.email, event.password);
         emit(AuthConfirmationCodeSent()); // Emit success state
-      } catch (error) {
-        if (error.toString() == "User already exists") {
-          emit(AuthConfirmationCodeSent()); // Emit success state
-        } else {
+      } on SignupException catch (error) {
+        if (error.isEmailConfirmed) {
           emit(AuthFailure(
               error.toString())); // Emit failure state with error message
+        } else {
+          emit(
+              AuthConfirmationCodeSent()); // go to confirmation code sent state
         }
       }
     });
@@ -41,8 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await confirmAccountUseCase.call(event.code);
         emit(AuthProfileSetup()); // Emit success state
       } catch (error) {
-        emit(AuthFailure(
-            error.toString())); // Emit failure state with error message
+        emit(AuthFailure(error.toString()));
       }
     });
 

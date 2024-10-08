@@ -6,6 +6,6 @@ class AuthException implements Exception {
   @override
   String toString() {
     // Replace "Exception" with "Error"
-    return "Error: $message";
+    return "$message";
   }
 }

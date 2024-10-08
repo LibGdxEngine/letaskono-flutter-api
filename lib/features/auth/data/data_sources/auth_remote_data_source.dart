@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart';
 import '../models/user_model.dart';
 import '../../../../core/network/http_client.dart';
 import '../errors/AuthException.dart';
@@ -53,9 +54,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> confirmAccount(String code) async {
     try {
-      final response = await httpClient.post(
-        'api/v1/users/activate/',
-        data: {'code': code},
+      final response = await httpClient.get(
+        'api/v1/users/account-activate/?code=$code',
       );
 
       if (!_isSuccessStatusCode(response.statusCode)) {
@@ -107,7 +107,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-
   @override
   Future<String> signIn(String email, String password) async {
     try {
@@ -127,7 +126,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on DioException catch (e) {
       throw _handleError(e);
     }
-
   }
 
   bool _isSuccessStatusCode(int? statusCode) {
@@ -140,18 +138,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final Map<String, dynamic> errorData = e.response!.data;
 
       final String firstKey = errorData.keys.first;
-
       final dynamic firstErrorMessages = errorData[firstKey];
       if (firstErrorMessages is String) {
         return AuthException('$firstKey: $firstErrorMessages');
       } else if (firstErrorMessages is List<dynamic>) {
         return AuthException('$firstKey: ${firstErrorMessages.first}');
+      } else if (firstErrorMessages is Map<String, dynamic>) {
+        print(errorData['is_email_confirmed']);
+        return SignupException(
+            '${firstErrorMessages.values.first[0]}', errorData['is_email_confirmed']);
       }
-      return AuthException(e.response?.data);
+      return AuthException(e.response!.data);
     } else {
       // Network or other types of Dio errors
       return AuthException('Failed: ${e.message}');
     }
   }
-
 }

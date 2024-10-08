@@ -8,7 +8,7 @@ class SignUpPage extends StatelessWidget {
   final TextEditingController lastNameController =
   TextEditingController(text: "last name");
   final TextEditingController emailController =
-  TextEditingController(text: "ahmed@gmail.com");
+  TextEditingController(text: "ahmed11@gmail.com");
   final TextEditingController passwordController =
   TextEditingController(text: "ahmed1998");
 
