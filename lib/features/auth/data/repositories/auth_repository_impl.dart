@@ -21,8 +21,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> submitProfile(AuthEntity userProfile) async {
-    return await remoteDataSource.submitProfile(UserModel(
+  Future<void> completeProfile(AuthEntity userProfile) async {
+    return await remoteDataSource.completeProfile(UserModel(
       id: userProfile.id,
       firstName: userProfile.firstName,
       lastName: userProfile.lastName,

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class GenderSelectionWidget extends StatefulWidget {
   final ValueChanged<String?> onGenderSelected;
+  final String? selectedGender;
 
-  const GenderSelectionWidget({super.key, required this.onGenderSelected});
+  const GenderSelectionWidget(
+      {super.key, required this.onGenderSelected, this.selectedGender,});
 
   @override
   _GenderSelectionWidgetState createState() => _GenderSelectionWidgetState();
@@ -11,6 +13,24 @@ class GenderSelectionWidget extends StatefulWidget {
 
 class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
   String? _selectedGender;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedGender = widget.selectedGender; // Set initial selected gender when widget initializes
+  }
+
+  @override
+  void didUpdateWidget(covariant GenderSelectionWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If the selectedGender from the parent changes, update the state
+    if (widget.selectedGender != oldWidget.selectedGender) {
+      setState(() {
+        _selectedGender = widget.selectedGender;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +47,7 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
   // Helper method to build each gender option
   Widget _buildGenderOption(String label, IconData icon, String gender) {
     bool isSelected = _selectedGender == gender;
+
     return GestureDetector(
       onTap: () {
         setState(() {

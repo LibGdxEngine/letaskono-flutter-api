@@ -19,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignUp signUpUseCase = sl<SignUp>();
   final SignIn signInUseCase = sl<SignIn>();
   final ConfirmAccount confirmAccountUseCase = sl<ConfirmAccount>();
-  final SubmitProfile submitProfileUseCase = sl<SubmitProfile>();
+  final CompleteProfile submitProfileUseCase = sl<CompleteProfile>();
 
   AuthBloc() : super(AuthInitial()) {
     on<SignUpEvent>((event, emit) async {

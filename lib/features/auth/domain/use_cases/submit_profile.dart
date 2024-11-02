@@ -2,12 +2,12 @@
 import '../entities/AuthEntity.dart';
 import '../repositories/auth_repository.dart';
 
-class SubmitProfile {
+class CompleteProfile {
   final AuthRepository repository;
 
-  SubmitProfile(this.repository);
+  CompleteProfile(this.repository);
 
   Future<void> call(AuthEntity userProfile) async {
-    return await repository.submitProfile(userProfile);
+    return await repository.completeProfile(userProfile);
   }
 }

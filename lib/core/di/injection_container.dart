@@ -36,7 +36,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignUp(sl()));
   sl.registerLazySingleton(() => SignIn(sl()));
   sl.registerLazySingleton(() => ConfirmAccount(sl()));
-  sl.registerLazySingleton(() => SubmitProfile(sl()));
+  sl.registerLazySingleton(() => CompleteProfile(sl()));
 
   // Register Bloc
   sl.registerFactory(() => AuthBloc());

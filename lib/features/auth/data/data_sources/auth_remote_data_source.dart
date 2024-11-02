@@ -15,7 +15,7 @@ abstract class AuthRemoteDataSource {
 
   Future<void> confirmAccount(String code);
 
-  Future<void> submitProfile(UserModel userProfile);
+  Future<void> completeProfile(UserModel userProfile);
 
   Future<UserModel> getUserData();
 }
@@ -67,10 +67,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> submitProfile(UserModel userProfile) async {
+  Future<void> completeProfile(UserModel userProfile) async {
     try {
       final response = await httpClient.post(
-        '/auth/submit-profile',
+        'api/v1/users/complete-profile/',
         data: userProfile.toJson(),
       );
 
