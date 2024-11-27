@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:letaskono_flutter/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:letaskono_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:letaskono_flutter/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/domain/use_cases/sign_in.dart';
 import '../network/http_client.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
@@ -15,18 +16,25 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   // Register Dio client
+
   sl.registerLazySingleton(() => Dio());
+
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerSingleton<SharedPreferences>(sharedPreferences);
 
   // Register HttpClient
   sl.registerLazySingleton(() => HttpClient(dio: sl()));
-
+  // Ensure all async dependencies are initialized before proceeding
+  await sl.allReady();
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(httpClient: sl()));
+      () => AuthRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
 
   // Register AuthRepositoryImpl
   sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(remoteDataSource: sl()),  // Provide the remote data source to the repository
+    () => AuthRepositoryImpl(
+        remoteDataSource:
+            sl()), // Provide the remote data source to the repository
   );
 
   // Repositories

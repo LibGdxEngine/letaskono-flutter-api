@@ -30,7 +30,7 @@ class ConfirmCodeEvent extends AuthEvent {
 }
 
 class SubmitProfileEvent extends AuthEvent {
-  final AuthEntity userProfile;
+  final ProfileCompletion profileCompletion;
 
-  SubmitProfileEvent(this.userProfile);
+  SubmitProfileEvent(this.profileCompletion);
 }

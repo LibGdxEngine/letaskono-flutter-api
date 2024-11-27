@@ -30,14 +30,13 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthSuccess) {
-            // Navigate to the home page on successful sign-in
-            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-          } else if (state is AuthFailure) {
-            // Show error message using a SnackBar
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+          switch (state) {
+            case AuthSuccess():
+              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+            case AuthFailure():
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
           }
         },
         child: Padding(
@@ -58,8 +57,9 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 20),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
-                  if (state is AuthLoading){
-                    return const CircularProgressIndicator();
+                  switch (state) {
+                    case AuthLoading():
+                      return const CircularProgressIndicator();
                   }
                   return ElevatedButton(
                     onPressed: () {

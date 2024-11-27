@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../../../../core/network/http_client.dart';
 import '../errors/AuthException.dart';
@@ -15,15 +16,16 @@ abstract class AuthRemoteDataSource {
 
   Future<void> confirmAccount(String code);
 
-  Future<void> completeProfile(UserModel userProfile);
+  Future<void> completeProfile(Map<String, dynamic> profileCompletionAsJson);
 
   Future<UserModel> getUserData();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final HttpClient httpClient;
+  final SharedPreferences prefs;
 
-  AuthRemoteDataSourceImpl({required this.httpClient});
+  AuthRemoteDataSourceImpl({required this.httpClient, required this.prefs});
 
   @override
   Future<void> signUp(
@@ -67,23 +69,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> completeProfile(UserModel userProfile) async {
+  Future<void> completeProfile(
+      Map<String, dynamic> profileCompletionAsJson) async {
     try {
+      String? token = prefs.getString("auth_token");
       final response = await httpClient.post(
         'api/v1/users/complete-profile/',
-        data: userProfile.toJson(),
+        data: profileCompletionAsJson,
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
       );
 
       if (response.statusCode != 200) {
         throw AuthException('Failed to submit profile');
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw AuthException(
-            'Profile submission failed: ${e.response?.data['message']}');
-      } else {
-        throw AuthException('Profile submission failed: ${e.message}');
-      }
+      throw _handleError(e);
     }
   }
 
@@ -98,12 +101,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw AuthException('Failed to load user data');
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw AuthException(
-            'Failed to get user data: ${e.response?.data['message']}');
-      } else {
-        throw AuthException('Failed to get user data: ${e.message}');
-      }
+      throw _handleError(e);
     }
   }
 
@@ -139,15 +137,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final String firstKey = errorData.keys.first;
       final dynamic firstErrorMessages = errorData[firstKey];
+
       if (firstErrorMessages is String) {
         return AuthException('$firstKey: $firstErrorMessages');
       } else if (firstErrorMessages is List<dynamic>) {
         return AuthException('$firstKey: ${firstErrorMessages.first}');
       } else if (firstErrorMessages is Map<String, dynamic>) {
-        print(errorData['is_email_confirmed']);
-        return SignupException(
-            '${firstErrorMessages.values.first[0]}', errorData['is_email_confirmed']);
+        return SignupException('${firstErrorMessages.values.first[0]}',
+            errorData['is_email_confirmed']);
       }
+
       return AuthException(e.response!.data);
     } else {
       // Network or other types of Dio errors

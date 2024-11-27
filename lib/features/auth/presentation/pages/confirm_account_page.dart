@@ -18,18 +18,19 @@ class ConfirmCodePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Confirm Your Account')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthProfileSetup) {
-            BlocProvider.of<AuthBloc>(context)
-                .add(SignInEvent(email!, password!));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Account confirmed, enter your data")),
-            );
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/profileSetup', (route) => false);
-          } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+          switch (state) {
+            case AuthProfileSetup():
+              BlocProvider.of<AuthBloc>(context)
+                  .add(SignInEvent(email!, password!));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Account confirmed, enter your data")),
+              );
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/profileSetup', (route) => false);
+            case AuthFailure():
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
           }
         },
         child: Padding(

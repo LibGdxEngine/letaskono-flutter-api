@@ -26,3 +26,5 @@ class AuthProfileSetup extends AuthState {}
 class AuthPendingActivation extends AuthState {}
 
 class AuthAuthenticated extends AuthState {}
+
+class AuthProfileSubmitted extends AuthState {}

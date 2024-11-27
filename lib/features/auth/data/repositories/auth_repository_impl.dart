@@ -1,4 +1,6 @@
 // lib/features/auth/data/repositories/auth_repository_impl.dart
+import 'package:letaskono_flutter/features/auth/domain/entities/ProfileSetupEntity.dart';
+
 import '../../domain/entities/AuthEntity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/auth_remote_data_source.dart';
@@ -21,13 +23,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> completeProfile(AuthEntity userProfile) async {
-    return await remoteDataSource.completeProfile(UserModel(
-      id: userProfile.id,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      email: userProfile.email,
-    ));
+  Future<void> completeProfile(ProfileCompletion profileCompletion) async {
+    return await remoteDataSource.completeProfile(profileCompletion.toJson());
   }
 
   @override

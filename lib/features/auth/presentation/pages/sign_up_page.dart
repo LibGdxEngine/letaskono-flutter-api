@@ -21,17 +21,16 @@ class SignUpPage extends StatelessWidget {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           // Handle success and failure states
-          if (state is AuthConfirmationCodeSent) {
-            // Navigate to confirmation page on successful sign-up
-            Navigator.pushNamed(context, '/confirm', arguments: {
-              'email': emailController.text,
-              'password': passwordController.text,
-            });
-          } else if (state is AuthFailure) {
-            // Show error message using a SnackBar
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+          switch (state) {
+            case AuthConfirmationCodeSent():
+              Navigator.pushNamed(context, '/confirm', arguments: {
+                'email': emailController.text,
+                'password': passwordController.text,
+              });
+            case AuthFailure():
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
           }
         },
         child: Padding(
@@ -59,8 +58,9 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(height: 20),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
-                  if (state is AuthLoading) {
-                    return const CircularProgressIndicator(); // Show loading indicator during sign-up
+                  switch (state) {
+                    case AuthLoading():
+                      return const CircularProgressIndicator();
                   }
                   return ElevatedButton(
                     onPressed: () {
