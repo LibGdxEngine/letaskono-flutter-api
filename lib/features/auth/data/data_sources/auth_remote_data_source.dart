@@ -14,6 +14,10 @@ abstract class AuthRemoteDataSource {
 
   Future<String> signIn(String email, String password);
 
+  Future<void> passwordReset(String email);
+
+  Future<void> passwordVerify(String code, String newPassword);
+
   Future<void> confirmAccount(String code);
 
   Future<void> completeProfile(Map<String, dynamic> profileCompletionAsJson);
@@ -151,6 +155,43 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } else {
       // Network or other types of Dio errors
       return AuthException('Failed: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> passwordReset(String email) async {
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/password-reset/',
+        data: {
+          'email': email,
+        },
+      );
+
+      if (!_isSuccessStatusCode(response.statusCode)) {
+        throw AuthException('Request failed');
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> passwordVerify(String code, String newPassword) async {
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/password-reset-verify/',
+        data: {
+          'code': code,
+          'new_password': newPassword,
+        },
+      );
+
+      if (!_isSuccessStatusCode(response.statusCode)) {
+        throw AuthException('Request failed');
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
     }
   }
 }

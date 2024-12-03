@@ -6,7 +6,7 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacementNamed(context, '/profileSetup');
+      Navigator.pushReplacementNamed(context, '/signin');
     });
     return const Scaffold(
       body: Center(

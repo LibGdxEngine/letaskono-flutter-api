@@ -313,9 +313,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   // In the final step, clear data on successful submission
   void _onSubmit() async {
     // Submit the form (do your submission logic)
-    // await _clearFormData(); // Clear saved data after submission
+    await _clearFormData(); // Clear saved data after submission
     // TODO: send request to fill user data
     BlocProvider.of<AuthBloc>(context).add(SubmitProfileEvent(ProfileCompletion(
+      gender: _selectedGender == "male" ? 'M' : 'F',
       age: int.parse(ageController.text),
       aboutMe: aboutMeController.text,
       azkar: _selectedAzkarPractice,

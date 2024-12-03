@@ -13,9 +13,9 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   // Define the controllers
   final TextEditingController emailController =
-  TextEditingController(text: "ahmed1@gmail.com");
+      TextEditingController(text: "ahmed1@gmail.com");
   final TextEditingController passwordController =
-  TextEditingController(text: "ahmed1998");
+      TextEditingController(text: "ahmed1998");
 
   @override
   void dispose() {
@@ -32,7 +32,8 @@ class _SignInPageState extends State<SignInPage> {
         listener: (context, state) {
           switch (state) {
             case AuthSuccess():
-              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/users', (route) => false);
             case AuthFailure():
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -74,6 +75,29 @@ class _SignInPageState extends State<SignInPage> {
                     child: const Text('Sign In'),
                   );
                 },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to the reset password page
+                      Navigator.pushReplacementNamed(context, '/signup');
+                    },
+                    child: Text("Create Account"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text("Forgot your password?"),
+              TextButton(
+                onPressed: () {
+                  // Navigate to the reset password page
+                  Navigator.pushNamed(context, '/resetPassword');
+                },
+                child: Text("Reset Password"),
               ),
             ],
           ),

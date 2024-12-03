@@ -28,3 +28,7 @@ class AuthPendingActivation extends AuthState {}
 class AuthAuthenticated extends AuthState {}
 
 class AuthProfileSubmitted extends AuthState {}
+
+class AuthPasswordResetEmailSent extends AuthState {}
+
+class AuthPasswordVerified extends AuthState {}

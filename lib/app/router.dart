@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:letaskono_flutter/features/auth/presentation/pages/confirm_account_page.dart';
 import 'package:letaskono_flutter/features/auth/presentation/pages/profile_setup_page.dart';
+import 'package:letaskono_flutter/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:letaskono_flutter/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:letaskono_flutter/features/auth/presentation/pages/sign_up_page.dart';
-import 'package:letaskono_flutter/features/auth/presentation/pages/splash_page.dart';
-import 'package:letaskono_flutter/features/home/presentation/pages/home_page.dart';
-import 'package:letaskono_flutter/features/home/presentation/pages/detail_page.dart';
+import 'package:letaskono_flutter/features/splash_page.dart';
+import 'package:letaskono_flutter/features/main_page.dart';
 
+import '../features/users/presentation/pages/detail_page.dart';
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -24,12 +25,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const ProfileSetupPage());
       case '/signin':
         return MaterialPageRoute(builder: (_) => const SignInPage());
+      case '/resetPassword':
+        return MaterialPageRoute(builder: (_) => ResetPasswordPage());
       case '/signup':
         return MaterialPageRoute(builder: (_) => SignUpPage());
-      case '/home':
+      case '/users':
         return MaterialPageRoute(builder: (_) => const HomePage());
-      case '/detail':
-        final int? userId = settings.arguments as int?;
+      case '/userDetail':
+        final String? userId = settings.arguments as String?;
         return MaterialPageRoute(
           builder: (_) => DetailPage(userId: userId),
         );
