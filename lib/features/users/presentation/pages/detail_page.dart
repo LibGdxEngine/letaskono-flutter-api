@@ -53,6 +53,16 @@ class DetailPage extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
+                    } else if (state is AddToBlockListSuccess) {
+                      userDetails.isUserInBlackList = true;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.result)),
+                      );
+                    } else if (state is RemoveFromBlockListSuccess) {
+                      userDetails.isUserInBlackList = false;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.result)),
+                      );
                     }
                   },
                   child: BlocBuilder<ActionBtnBloc, ActionBtnState>(
@@ -100,7 +110,11 @@ class DetailPage extends StatelessWidget {
                             child: Icon(Icons.delete),
                             label: 'Delete Item',
                             backgroundColor: Colors.red,
-                            onTap: () => print('Delete Item tapped'),
+                            onTap: () => userDetails.isUserInBlackList!
+                                ? BlocProvider.of<ActionBtnBloc>(context).add(
+                                    RemoveFromBlackListEvent(userDetails.code!))
+                                : BlocProvider.of<ActionBtnBloc>(context).add(
+                                    AddToBlackListEvent(userDetails.code!)),
                           ),
                         ],
                       );

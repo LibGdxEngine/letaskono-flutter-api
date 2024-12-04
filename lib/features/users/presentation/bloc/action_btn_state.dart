@@ -43,3 +43,21 @@ class RemoveFromFavouritesSuccess extends ActionBtnState{
   @override
   List<Object?> get props => [result];
 }
+
+class AddToBlockListSuccess extends ActionBtnState{
+  final String result;
+
+  AddToBlockListSuccess(this.result);
+
+  @override
+  List<Object?> get props => [result];
+}
+
+class RemoveFromBlockListSuccess extends ActionBtnState{
+  final String result;
+
+  RemoveFromBlockListSuccess(this.result);
+
+  @override
+  List<Object?> get props => [result];
+}

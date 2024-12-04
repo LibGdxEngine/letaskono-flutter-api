@@ -1,10 +1,11 @@
-// user_bloc.dart
+// request_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEntity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
 
+import '../../domain/use_cases/fetch_favourites.dart';
 import '../../domain/use_cases/fetch_user_details.dart';
 import '../../domain/use_cases/fetch_users.dart';
 import '../../domain/use_cases/send_request.dart';
@@ -15,6 +16,7 @@ part 'user_state.dart';
 
 class UserBloc extends Bloc<UsersEvent, UserState> {
   final FetchUsers fetchUsersUseCase = sl<FetchUsers>();
+  final FetchFavourites fetchFavouritesUseCase = sl<FetchFavourites>();
   final FetchUserDetails fetchUserDetailsUseCase = sl<FetchUserDetails>();
   final SendRequest sendRequestUseCase = sl<SendRequest>();
 
@@ -25,6 +27,17 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
       List<UserEntity> users = [];
       try {
         users = await fetchUsersUseCase();
+        emit(UsersLoaded(users));
+      } catch (error) {
+        emit(UsersError(error.toString()));
+      }
+    });
+    on<FetchFavouritesEvent>((event, emit) async {
+      emit(UserLoading());
+
+      List<UserEntity> users = [];
+      try {
+        users = await fetchFavouritesUseCase();
         emit(UsersLoaded(users));
       } catch (error) {
         emit(UsersError(error.toString()));
@@ -42,7 +55,5 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
         emit(UsersError(error.toString()));
       }
     });
-
-
   }
 }

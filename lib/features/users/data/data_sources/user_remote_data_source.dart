@@ -10,6 +10,8 @@ import '../models/user_details.dart';
 abstract class UserRemoteDataSource {
   Future<List<User>> fetchUsers();
 
+  Future<List<User>> fetchFavourites();
+
   Future<UserDetails> fetchUserDetails(String userCode);
 
   Future<String> sendRequest(String receiverId);
@@ -17,6 +19,10 @@ abstract class UserRemoteDataSource {
   Future<String> addToFavourites(String userCode);
 
   Future<String> removeFromFavourites(String userCode);
+
+  Future<String> addToBlacklist(String userCode);
+
+  Future<String> removeFromBlacklist(String userCode);
 }
 
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
@@ -114,6 +120,63 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       return response.data['status'];
     } on DioException catch (e) {
       throw Exception(e.response?.data.toString());
+    }
+  }
+
+  @override
+  Future<String> addToBlacklist(String userCode) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/account/${userCode}/blacklist/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data['status'];
+    } on DioException catch (e) {
+      throw Exception(e.response?.data.toString());
+    }
+  }
+
+  @override
+  Future<String> removeFromBlacklist(String userCode) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/account/${userCode}/unblacklist/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data['status'];
+    } on DioException catch (e) {
+      throw Exception(e.response?.data.toString());
+    }
+  }
+
+  @override
+  Future<List<User>> fetchFavourites() async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.get(
+        'api/v1/users/account/following/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      // Decode the JSON response
+      List<dynamic> responseList =
+          response.data; // Dio directly gives JSON-decoded response
+      var users = responseList.map((data) => User.fromJson(data)).toList();
+
+      // Map the response to User objects
+      return users;
+    } on DioException catch (e) {
+      throw Exception(e);
     }
   }
 }

@@ -22,6 +22,15 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
+  Future<List<UserEntity>> fetchFavourites() async {
+    // Fetch users from the remote data source
+    final List<User> users = await remoteDataSource.fetchFavourites();
+
+    // Map User models to UserEntity
+    return users.map((user) => _mapUserToEntity(user)).toList();
+  }
+
+  @override
   Future<UserDetailsEntity> fetchUserDetails(String userCode) async {
     final UserDetails user = await remoteDataSource.fetchUserDetails(userCode);
     return _mapUserDetailToEntity(user);
@@ -40,6 +49,16 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<String> removeFromFavourites(String userCode) async {
     return await remoteDataSource.removeFromFavourites(userCode);
+  }
+
+  @override
+  Future<String> addToBlacklist(String userCode) async {
+    return await remoteDataSource.addToBlacklist(userCode);
+  }
+
+  @override
+  Future<String> removeFromBlacklist(String userCode) async {
+    return await remoteDataSource.removeFromBlacklist(userCode);
   }
 
   UserDetailsEntity _mapUserDetailToEntity(UserDetails user) {
@@ -102,4 +121,6 @@ class UserRepositoryImpl extends UserRepository {
       gender: user.gender,
     );
   }
+
+
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:letaskono_flutter/features/notifications/presentation/pages/notifications_page.dart';
+import 'package:letaskono_flutter/features/requests/presentation/pages/requests_page.dart';
+import 'package:letaskono_flutter/features/users/presentation/pages/favourites_page.dart';
 import 'package:letaskono_flutter/features/users/presentation/pages/home_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,10 +17,10 @@ class _HomePageState extends State<HomePage> {
   // List of screens for navigation
   final List<Widget> _screens = [
     UsersList(),
-    Center(child: Text('سجل الطلبات')),
-    Center(child: Text('المحفوظات')),
-    Center(child: Text('التنبيهات')),
-    Center(child: Text('المقالات')),
+    RequestsList(),
+    FavouritesList(),
+    NotificationsList(),
+    // Center(child: Text('المقالات')),
   ];
 
   @override
@@ -75,11 +78,11 @@ class _HomePageState extends State<HomePage> {
             selectedIcon: Icon(Icons.notifications),
             label: 'التنبيهات',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.article_outlined),
-            selectedIcon: Icon(Icons.article),
-            label: 'المقالات',
-          ),
+          // NavigationDestination(
+          //   icon: Icon(Icons.article_outlined),
+          //   selectedIcon: Icon(Icons.article),
+          //   label: 'المقالات',
+          // ),
         ],
       ),
     );

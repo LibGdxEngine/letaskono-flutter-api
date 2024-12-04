@@ -23,3 +23,15 @@ class RemoveFromFavouritesEvent extends ActionBtnEvent {
 
   RemoveFromFavouritesEvent(this.userCode);
 }
+
+class AddToBlackListEvent extends ActionBtnEvent {
+  final String userCode;
+
+  AddToBlackListEvent(this.userCode);
+}
+
+class RemoveFromBlackListEvent extends ActionBtnEvent {
+  final String userCode;
+
+  RemoveFromBlackListEvent(this.userCode);
+}

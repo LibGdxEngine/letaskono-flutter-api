@@ -43,7 +43,7 @@ class UsersList extends StatelessWidget {
             } else if (state is UsersError) {
               return Center(child: Text('Error: ${state.error}'));
             } else {
-              return Center(child: Text('No data available.'));
+              return const Center(child: Text('...'));
             }
           },
         ),

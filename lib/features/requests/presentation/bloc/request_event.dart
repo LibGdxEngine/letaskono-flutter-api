@@ -1,12 +1,12 @@
 // user_event.dart
-part of 'user_bloc.dart';
+part of 'request_bloc.dart';
 
 abstract class UsersEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class FetchUsersEvent extends UsersEvent {}
+class FetchRequestsEvent extends UsersEvent {}
 
 class FetchFavouritesEvent extends UsersEvent {}
 

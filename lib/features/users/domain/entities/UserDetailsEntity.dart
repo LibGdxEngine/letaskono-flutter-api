@@ -54,7 +54,7 @@ class UserDetailsEntity {
   final DateTime? lastSeen;
   bool? isUserInFollowingList;
   final bool? isUserSentMeValidRequest;
-  final bool? isUserInBlackList;
+  bool? isUserInBlackList;
 
   UserDetailsEntity({
     this.id,

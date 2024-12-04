@@ -5,12 +5,24 @@ import 'package:letaskono_flutter/features/auth/data/data_sources/auth_remote_da
 import 'package:letaskono_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:letaskono_flutter/features/auth/domain/use_cases/password_reset.dart';
 import 'package:letaskono_flutter/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:letaskono_flutter/features/notifications/data/data_sources/notifications_remote_data_source.dart';
+import 'package:letaskono_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:letaskono_flutter/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:letaskono_flutter/features/notifications/domain/use_cases/fetch_notifications.dart';
+import 'package:letaskono_flutter/features/requests/data/data_sources/requests_remote_data_source.dart';
+import 'package:letaskono_flutter/features/requests/data/repositories/request_repository_impl.dart';
+import 'package:letaskono_flutter/features/requests/domain/repositories/request_repository.dart';
+import 'package:letaskono_flutter/features/requests/domain/use_cases/fetch_requests.dart';
 import 'package:letaskono_flutter/features/users/data/data_sources/user_remote_data_source.dart';
 import 'package:letaskono_flutter/features/users/data/repositories/user_repository_impl.dart';
 import 'package:letaskono_flutter/features/users/domain/repositories/user_repository.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_favourites.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_favourites.dart';
+
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_user_details.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_users.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_favourites.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/send_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,8 +53,12 @@ Future<void> init() async {
       () => AuthRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
   sl.registerLazySingleton<UserRemoteDataSource>(
       () => UserRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
+  sl.registerLazySingleton<RequestsRemoteDataSource>(
+      () => RequestsRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+      () => NotificationRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
 
-  // Register AuthRepositoryImpl
+  // Register Repository Implementations
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
         remoteDataSource:
@@ -53,10 +69,23 @@ Future<void> init() async {
         remoteDataSource:
             sl()), // Provide the remote data source to the repository
   );
+  sl.registerLazySingleton<RequestRepository>(
+    () => RequestRepositoryImpl(
+        remoteDataSource:
+            sl()), // Provide the remote data source to the repository
+  );
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(
+        remoteDataSource:
+            sl()), // Provide the remote data source to the repository
+  );
 
   // Repositories
   sl.registerLazySingleton(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton(() => UserRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton(() => RequestRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton(
+      () => NotificationRepositoryImpl(remoteDataSource: sl()));
 
   // Use Cases
   sl.registerLazySingleton(() => SignUp(sl()));
@@ -67,10 +96,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CompleteProfile(sl()));
 
   sl.registerLazySingleton(() => FetchUsers(sl()));
+  sl.registerLazySingleton(() => FetchRequests(sl()));
+  sl.registerLazySingleton(() => FetchFavourites(sl()));
   sl.registerLazySingleton(() => FetchUserDetails(sl()));
   sl.registerLazySingleton(() => SendRequest(sl()));
   sl.registerLazySingleton(() => AddToFavourites(sl()));
   sl.registerLazySingleton(() => RemoveFromFavourites(sl()));
+  sl.registerLazySingleton(() => AddToBlacklist(sl()));
+  sl.registerLazySingleton(() => RemoveFromBlacklist(sl()));
+
+  sl.registerLazySingleton(() => FetchNotifications(sl()));
 
   // Register Bloc
   sl.registerFactory(() => AuthBloc());
