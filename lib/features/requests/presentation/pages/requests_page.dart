@@ -21,7 +21,7 @@ class RequestsList extends StatelessWidget {
             } else if (state is RequestsLoaded) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<RequestBloc>().add(FetchFavouritesEvent());
+                  context.read<RequestBloc>().add(FetchRequestsEvent());
                 },
                 child: state.requests.isNotEmpty
                     ? ListView.builder(

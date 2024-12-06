@@ -11,11 +11,24 @@ class UserLoading extends UserState {}
 
 class UsersLoaded extends UserState {
   final List<UserEntity> users;
+  final int currentPage;
+  final bool hasMore;
 
-  UsersLoaded(this.users);
+  UsersLoaded(this.users, this.currentPage, this.hasMore);
 
   @override
-  List<Object?> get props => [users];
+  List<Object?> get props => [users, currentPage, hasMore];
+}
+
+class UserLoadingMore extends UserState {
+  final List<UserEntity> users;
+  final int currentPage;
+  final bool hasMore;
+
+  UserLoadingMore(this.users, this.currentPage, this.hasMore);
+
+  @override
+  List<Object> get props => [users, currentPage, hasMore];
 }
 
 class UserDetailsLoaded extends UserState {

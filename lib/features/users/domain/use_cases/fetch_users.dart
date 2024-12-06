@@ -7,7 +7,7 @@ class FetchUsers {
 
   FetchUsers(this.repository);
 
-  Future<List<UserEntity>> call() async {
-    return await repository.fetchUsers();
+  Future<List<UserEntity>> call({required int page}) async {
+    return await repository.fetchUsers(page: page);
   }
 }

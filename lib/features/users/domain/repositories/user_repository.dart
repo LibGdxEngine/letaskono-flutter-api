@@ -2,9 +2,9 @@ import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEnti
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
 
 abstract class UserRepository {
-  Future<List<UserEntity>> fetchUsers();
+  Future<List<UserEntity>> fetchUsers({int page});
 
-  Future<List<UserEntity>> fetchFavourites();
+  Future<List<UserEntity>> fetchFavourites({int page});
 
   Future<UserDetailsEntity> fetchUserDetails(String userCode);
 

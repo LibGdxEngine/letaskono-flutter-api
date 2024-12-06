@@ -22,25 +22,59 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
 
   UserBloc() : super(UsersInitial()) {
     on<FetchUsersEvent>((event, emit) async {
-      emit(UserLoading());
+      final currentState = state;
+      if (currentState is UsersLoaded || currentState is UserLoadingMore) {
+        if (!event.isRefreshing && !(currentState as UsersLoaded).hasMore)
+          return; // Prevent fetch if no more data
 
-      List<UserEntity> users = [];
-      try {
-        users = await fetchUsersUseCase();
-        emit(UsersLoaded(users));
-      } catch (error) {
-        emit(UsersError(error.toString()));
+        emit(UserLoadingMore((currentState as UsersLoaded).users,
+            currentState.currentPage, currentState.hasMore));
+
+        try {
+          final newUsers =
+              await fetchUsersUseCase(page: event.page); // Fetch notifications
+          final hasMore = newUsers.isNotEmpty; // Check if more data exists
+
+          emit(UsersLoaded(currentState.users + newUsers, event.page, hasMore));
+        } catch (error) {
+          emit(UsersError(error.toString()));
+        }
+      } else {
+        // Initial load
+        try {
+          final users = await fetchUsersUseCase(page: event.page);
+          emit(UsersLoaded(users, event.page, users.isNotEmpty));
+        } catch (error) {
+          emit(UsersError(error.toString()));
+        }
       }
     });
     on<FetchFavouritesEvent>((event, emit) async {
-      emit(UserLoading());
+      final currentState = state;
+      if (currentState is UsersLoaded || currentState is UserLoadingMore) {
+        if (!event.isRefreshing && !(currentState as UsersLoaded).hasMore)
+          return; // Prevent fetch if no more data
 
-      List<UserEntity> users = [];
-      try {
-        users = await fetchFavouritesUseCase();
-        emit(UsersLoaded(users));
-      } catch (error) {
-        emit(UsersError(error.toString()));
+        emit(UserLoadingMore((currentState as UsersLoaded).users,
+            currentState.currentPage, currentState.hasMore));
+
+        try {
+          final newUsers =
+          await fetchFavouritesUseCase(page: event.page); // Fetch notifications
+          final hasMore = newUsers.isNotEmpty; // Check if more data exists
+
+          emit(UsersLoaded(currentState.users + newUsers, event.page, hasMore));
+        } catch (error) {
+          emit(UsersError(error.toString()));
+        }
+      } else {
+        // Initial load
+        try {
+          final users = await fetchFavouritesUseCase(page: event.page);
+          emit(UsersLoaded(users, event.page, users.isNotEmpty));
+        } catch (error) {
+          emit(UsersError(error.toString()));
+        }
       }
     });
 

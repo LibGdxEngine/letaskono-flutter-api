@@ -16,10 +16,10 @@ class _HomePageState extends State<HomePage> {
 
   // List of screens for navigation
   final List<Widget> _screens = [
-    UsersList(),
+    UsersPage(),
     RequestsList(),
     FavouritesList(),
-    NotificationsList(),
+    NotificationsPage(),
     // Center(child: Text('المقالات')),
   ];
 

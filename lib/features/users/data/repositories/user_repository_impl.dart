@@ -13,18 +13,18 @@ class UserRepositoryImpl extends UserRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<UserEntity>> fetchUsers() async {
+  Future<List<UserEntity>> fetchUsers({int page = 1}) async {
     // Fetch users from the remote data source
-    final List<User> users = await remoteDataSource.fetchUsers();
+    final List<User> users = await remoteDataSource.fetchUsers(page: page);
 
     // Map User models to UserEntity
     return users.map((user) => _mapUserToEntity(user)).toList();
   }
 
   @override
-  Future<List<UserEntity>> fetchFavourites() async {
+  Future<List<UserEntity>> fetchFavourites({int page = 1}) async {
     // Fetch users from the remote data source
-    final List<User> users = await remoteDataSource.fetchFavourites();
+    final List<User> users = await remoteDataSource.fetchFavourites(page: page);
 
     // Map User models to UserEntity
     return users.map((user) => _mapUserToEntity(user)).toList();
@@ -121,6 +121,4 @@ class UserRepositoryImpl extends UserRepository {
       gender: user.gender,
     );
   }
-
-
 }

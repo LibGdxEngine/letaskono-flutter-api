@@ -7,7 +7,7 @@ class FetchFavourites {
 
   FetchFavourites(this.repository);
 
-  Future<List<UserEntity>> call() async {
-    return await repository.fetchFavourites();
+  Future<List<UserEntity>> call({required int page}) async {
+    return await repository.fetchFavourites(page: page);
   }
 }

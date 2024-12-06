@@ -8,9 +8,9 @@ import '../models/user.dart';
 import '../models/user_details.dart';
 
 abstract class UserRemoteDataSource {
-  Future<List<User>> fetchUsers();
+  Future<List<User>> fetchUsers({int page});
 
-  Future<List<User>> fetchFavourites();
+  Future<List<User>> fetchFavourites({required int page});
 
   Future<UserDetails> fetchUserDetails(String userCode);
 
@@ -32,11 +32,12 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   UserRemoteDataSourceImpl({required this.httpClient, required this.prefs});
 
   @override
-  Future<List<User>> fetchUsers() async {
+  Future<List<User>> fetchUsers({int page = 1}) async {
     String? token = prefs.getString('auth_token');
+
     try {
       final response = await httpClient.get(
-        'api/v1/users/account/',
+        'api/v1/users/account/?page=$page',
         headers: {
           "Authorization": "Token ${token}",
           "Content-Type": "application/json",
@@ -44,12 +45,15 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       );
       // Decode the JSON response
       List<dynamic> responseList =
-          response.data; // Dio directly gives JSON-decoded response
+          response.data['results']; // Dio directly gives JSON-decoded response
       var users = responseList.map((data) => User.fromJson(data)).toList();
 
       // Map the response to User objects
       return users;
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return [];
+      }
       throw Exception(e);
     }
   }
@@ -158,11 +162,11 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   }
 
   @override
-  Future<List<User>> fetchFavourites() async {
+  Future<List<User>> fetchFavourites({int page = 1}) async {
     String? token = prefs.getString('auth_token');
     try {
       final response = await httpClient.get(
-        'api/v1/users/account/following/',
+        'api/v1/users/account/following/?page=$page',
         headers: {
           "Authorization": "Token ${token}",
           "Content-Type": "application/json",
@@ -170,12 +174,15 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       );
       // Decode the JSON response
       List<dynamic> responseList =
-          response.data; // Dio directly gives JSON-decoded response
+          response.data['results']; // Dio directly gives JSON-decoded response
       var users = responseList.map((data) => User.fromJson(data)).toList();
 
       // Map the response to User objects
       return users;
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return [];
+      }
       throw Exception(e);
     }
   }

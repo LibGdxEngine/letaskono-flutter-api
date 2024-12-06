@@ -4,16 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/notification_bloc.dart';
 import 'NotificationCard.dart';
 
-class NotificationList extends StatefulWidget {
-  const NotificationList({
+class NotificationsList extends StatefulWidget {
+  const NotificationsList({
     super.key,
   });
 
   @override
-  State<NotificationList> createState() => _NotificationListState();
+  State<NotificationsList> createState() => _NotificationsListState();
 }
 
-class _NotificationListState extends State<NotificationList> {
+class _NotificationsListState extends State<NotificationsList> {
   final ScrollController _scrollController = ScrollController();
 
   @override

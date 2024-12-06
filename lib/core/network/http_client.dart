@@ -4,7 +4,7 @@ class HttpClient {
   final Dio dio;
 
   HttpClient({required this.dio}) {
-    dio.options.baseUrl = 'http://172.22.64.1:8000/'; // Set your API base URL
+    dio.options.baseUrl = 'http://172.21.16.1:8000/'; // Set your API base URL
     dio.options.connectTimeout = const Duration(seconds: 5); // 5 seconds timeout
     dio.options.receiveTimeout = const Duration(seconds: 3);
     dio.options.sendTimeout = const Duration(seconds: 4);

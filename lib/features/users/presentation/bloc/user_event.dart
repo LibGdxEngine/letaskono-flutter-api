@@ -6,9 +6,19 @@ abstract class UsersEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchUsersEvent extends UsersEvent {}
+class FetchUsersEvent extends UsersEvent {
+  final int page;
+  final bool isRefreshing;
 
-class FetchFavouritesEvent extends UsersEvent {}
+  FetchUsersEvent({this.page = 1, this.isRefreshing = false});
+}
+
+class FetchFavouritesEvent extends UsersEvent {
+  final int page;
+  final bool isRefreshing;
+
+  FetchFavouritesEvent({this.page = 1, this.isRefreshing = false});
+}
 
 class FetchUserDetailsEvent extends UsersEvent {
   final String userId;
