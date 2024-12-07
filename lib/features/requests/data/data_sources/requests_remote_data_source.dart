@@ -8,7 +8,7 @@ import '../../../../core/network/http_client.dart';
 import '../models/request_type.dart';
 
 abstract class RequestsRemoteDataSource {
-  Future<List<AcceptanceRequest>> fetchRequests();
+  Future<List<AcceptanceRequest>> fetchRequests({required int page});
 }
 
 class RequestsRemoteDataSourceImpl extends RequestsRemoteDataSource {
@@ -18,43 +18,59 @@ class RequestsRemoteDataSourceImpl extends RequestsRemoteDataSource {
   RequestsRemoteDataSourceImpl({required this.httpClient, required this.prefs});
 
   @override
-  Future<List<AcceptanceRequest>> fetchRequests() async {
+  Future<List<AcceptanceRequest>> fetchRequests({int page = 1}) async {
     String? token = prefs.getString('auth_token');
 
     try {
-      // Make two simultaneous requests
-      final responses = await Future.wait([
-        httpClient.get(
-          'api/v1/requests/acceptance_requests/sent_requests/',
-          headers: {
-            "Authorization": "Token ${token}",
-            "Content-Type": "application/json",
-          },
-        ),
-        httpClient.get(
-          'api/v1/requests/acceptance_requests/received_requests/',
-          headers: {
-            "Authorization": "Token ${token}",
-            "Content-Type": "application/json",
-          },
-        ),
-      ]);
+      // Make two simultaneous requests with individual error handling
+      final responses = await Future.wait(
+        [
+          _fetchRequests(
+            'api/v1/requests/acceptance_requests/sent_requests/?page=$page',
+            token,
+            RequestType.sent,
+          ),
+          _fetchRequests(
+            'api/v1/requests/acceptance_requests/received_requests/?page=$page',
+            token,
+            RequestType.received,
+          ),
+        ],
+        eagerError: false, // Ensure that all futures complete even if one fails
+      );
 
-      // Decode the responses
-      final List<dynamic> sentResponse = responses[0].data;
-      final List<dynamic> receivedResponse = responses[1].data;
-
-      // Map the JSON responses to AcceptanceRequest objects
-      final List<AcceptanceRequest> sentRequests = sentResponse
-          .map((data) => AcceptanceRequest.fromJson(data, RequestType.sent))
-          .toList();
-      final List<AcceptanceRequest> receivedRequests = receivedResponse
-          .map((data) => AcceptanceRequest.fromJson(data, RequestType.received))
-          .toList();
-      // Combine the two lists and return
-      return [...sentRequests, ...receivedRequests];
-    } on DioException catch (e) {
+      // Combine and return the results
+      return responses.expand((list) => list).toList();
+    } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  // Helper function to handle individual requests
+  Future<List<AcceptanceRequest>> _fetchRequests(
+    String url,
+    String? token,
+    RequestType requestType,
+  ) async {
+    try {
+      final response = await httpClient.get(
+        url,
+        headers: {
+          "Authorization": "Token $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      final List<dynamic> results = response.data['results'];
+      return results
+          .map((data) => AcceptanceRequest.fromJson(data, requestType))
+          .toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        // Return an empty list if the response is 404
+        return [];
+      }
+      rethrow; // Re-throw other exceptions
     }
   }
 }

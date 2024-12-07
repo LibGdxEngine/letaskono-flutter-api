@@ -10,10 +10,10 @@ class RequestRepositoryImpl extends RequestRepository {
   RequestRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<AcceptanceRequestEntity>> fetchRequests() async {
+  Future<List<AcceptanceRequestEntity>> fetchRequests({int page = 1}) async {
     // Fetch users from the remote data source
     final List<AcceptanceRequest> requests =
-        await remoteDataSource.fetchRequests();
+        await remoteDataSource.fetchRequests(page: page);
 
     // Map User models to UserEntity
     return requests.map((request) => _mapRequestToEntity(request)).toList();

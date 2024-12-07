@@ -8,7 +8,7 @@ class FetchRequests {
 
   FetchRequests(this.repository);
 
-  Future<List<AcceptanceRequestEntity>> call() async {
-    return await repository.fetchRequests();
+  Future<List<AcceptanceRequestEntity>> call({int page = 1}) async {
+    return await repository.fetchRequests(page: page);
   }
 }

@@ -9,19 +9,36 @@ part 'request_event.dart';
 
 part 'request_state.dart';
 
-class RequestBloc extends Bloc<UsersEvent, RequestState> {
+class RequestBloc extends Bloc<RequestEvent, RequestState> {
   final FetchRequests fetchRequestsUseCase = sl<FetchRequests>();
 
   RequestBloc() : super(RequestsInitial()) {
     on<FetchRequestsEvent>((event, emit) async {
-      emit(RequestsLoading());
+      final currentState = state;
+      if (currentState is RequestsLoaded || currentState is RequestsLoadingMore) {
+        if (!event.isRefreshing && !(currentState as RequestsLoaded).hasMore)
+          return; // Prevent fetch if no more data
 
-      List<AcceptanceRequestEntity> requests = [];
-      try {
-        requests = await fetchRequestsUseCase();
-        emit(RequestsLoaded(requests));
-      } catch (error) {
-        emit(RequestsError(error.toString()));
+        emit(RequestsLoadingMore((currentState as RequestsLoaded).requests,
+            currentState.currentPage, currentState.hasMore));
+
+        try {
+          final newUsers =
+          await fetchRequestsUseCase(page: event.page); // Fetch notifications
+          final hasMore = newUsers.isNotEmpty; // Check if more data exists
+
+          emit(RequestsLoaded(currentState.requests + newUsers, event.page, hasMore));
+        } catch (error) {
+          emit(RequestsError(error.toString()));
+        }
+      } else {
+        // Initial load
+        try {
+          final users = await fetchRequestsUseCase(page: event.page);
+          emit(RequestsLoaded(users, event.page, users.isNotEmpty));
+        } catch (error) {
+          emit(RequestsError(error.toString()));
+        }
       }
     });
   }

@@ -1,16 +1,21 @@
 // user_event.dart
 part of 'request_bloc.dart';
 
-abstract class UsersEvent extends Equatable {
+abstract class RequestEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class FetchRequestsEvent extends UsersEvent {}
+class FetchRequestsEvent extends RequestEvent {
+  final int page;
+  final bool isRefreshing;
 
-class FetchFavouritesEvent extends UsersEvent {}
+  FetchRequestsEvent({this.page = 1, this.isRefreshing = false});
+}
 
-class FetchUserDetailsEvent extends UsersEvent {
+class FetchFavouritesEvent extends RequestEvent {}
+
+class FetchUserDetailsEvent extends RequestEvent {
   final String userId;
 
   FetchUserDetailsEvent(this.userId);
