@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:letaskono_flutter/core/utils/confirmation_dialog.dart';
+import 'package:letaskono_flutter/features/chat/presentation/pages/chat_page.dart';
 
 import '../bloc/action_btn_bloc.dart';
 import '../bloc/user_bloc.dart';
+import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEntity.dart';
 
 class DetailPage extends StatelessWidget {
   final String? userId; // Nullable to handle edge cases
@@ -29,97 +32,103 @@ class DetailPage extends StatelessWidget {
             );
           }
         },
-        builder: (context, state) {
-          if (state is UserDetailsLoaded) {
-            final userDetails = state.user;
+        builder: (context, detailsState) {
+          if (detailsState is UserDetailsLoaded) {
+            final userDetails = detailsState.user;
             return BlocProvider(
               create: (context) => ActionBtnBloc(),
               child: Scaffold(
                 appBar: AppBar(title: Text('User ${userDetails.code} Details')),
                 floatingActionButton:
-                    BlocListener<ActionBtnBloc, ActionBtnState>(
+                    BlocConsumer<ActionBtnBloc, ActionBtnState>(
                   listener: (context, state) {
                     if (state is RequestSentFailed) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.reason)),
                       );
+                    } else if (state is RequestSentSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.result)),
+                      );
                     } else if (state is AddToFavouritesSuccess) {
-                      userDetails.isUserInFollowingList = true;
+                      detailsState.user.isUserInFollowingList = true;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
                     } else if (state is RemoveFromFavouritesSuccess) {
-                      userDetails.isUserInFollowingList = false;
+                      detailsState.user.isUserInFollowingList = false;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
                     } else if (state is AddToBlockListSuccess) {
-                      userDetails.isUserInBlackList = true;
+                      detailsState.user.isUserInBlackList = true;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
                     } else if (state is RemoveFromBlockListSuccess) {
-                      userDetails.isUserInBlackList = false;
+                      detailsState.user.isUserInBlackList = false;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.result)),
+                      );
+                    } else if (state is RequestAcceptedSuccess) {
+                      detailsState.user.validRequest?.status = "ACCEPTED";
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
                     }
                   },
-                  child: BlocBuilder<ActionBtnBloc, ActionBtnState>(
-                    builder: (context, state) {
-                      if (state is RequestSentLoading) {
-                        return CircularProgressIndicator();
-                      }
-                      return SpeedDial(
-                        animatedIcon: AnimatedIcons.menu_close,
-                        overlayColor: Colors.black,
-                        overlayOpacity: 0.5,
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        children: [
-                          SpeedDialChild(
-                            child: Icon(Icons.send),
-                            label: 'Add Item',
-                            backgroundColor: Colors.green,
-                            onTap: () => {
-                              userDetails.isUserSentMeValidRequest!
-                                  ? ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'لقد تلقيت طلبا من هذا الشخص\n'
-                                              ' تفقد قائمة الطلبات الخاصة بك')),
-                                    )
-                                  : BlocProvider.of<ActionBtnBloc>(context)
-                                      .add(SendRequestEvent(userDetails.id!))
-                            },
+                  builder: (context, state) {
+                    if (state is RequestSentLoading) {
+                      return CircularProgressIndicator();
+                    }
+                    return SpeedDial(
+                      animatedIcon: AnimatedIcons.menu_close,
+                      overlayColor: Colors.black,
+                      overlayOpacity: 0.5,
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      children: [
+                        buildRequestsButton(detailsState.user, context),
+                        SpeedDialChild(
+                          child: Icon(
+                            userDetails.isUserInFollowingList!
+                                ? Icons.favorite
+                                : Icons.favorite_outline,
+                            color: Colors.white,
                           ),
-                          SpeedDialChild(
-                            child: Icon(Icons.favorite_outline),
-                            label: 'Edit Item',
-                            backgroundColor: Colors.orange,
-                            onTap: () => {
-                              userDetails.isUserInFollowingList!
-                                  ? BlocProvider.of<ActionBtnBloc>(context).add(
-                                      RemoveFromFavouritesEvent(
-                                          userDetails.code!))
-                                  : BlocProvider.of<ActionBtnBloc>(context).add(
-                                      AddToFavouritesEvent(userDetails.code!))
-                            },
-                          ),
-                          SpeedDialChild(
-                            child: Icon(Icons.delete),
-                            label: 'Delete Item',
-                            backgroundColor: Colors.red,
-                            onTap: () => userDetails.isUserInBlackList!
+                          label: userDetails.isUserInFollowingList!
+                              ? 'إزالة من المحفوظات'
+                              : 'حفظ الاستمارة',
+                          backgroundColor: Colors.lightBlue,
+                          onTap: () => {
+                            userDetails.isUserInFollowingList!
                                 ? BlocProvider.of<ActionBtnBloc>(context).add(
-                                    RemoveFromBlackListEvent(userDetails.code!))
+                                    RemoveFromFavouritesEvent(
+                                        userDetails.code!))
                                 : BlocProvider.of<ActionBtnBloc>(context).add(
-                                    AddToBlackListEvent(userDetails.code!)),
+                                    AddToFavouritesEvent(userDetails.code!))
+                          },
+                        ),
+                        SpeedDialChild(
+                          child: Icon(
+                            userDetails.isUserInBlackList!
+                                ? Icons.block_outlined
+                                : Icons.no_accounts,
+                            color: Colors.white,
                           ),
-                        ],
-                      );
-                    },
-                  ),
+                          label: userDetails.isUserInBlackList!
+                              ? 'إزالة الحظر'
+                              : "حظر الاستمارة",
+                          backgroundColor: Colors.lightBlue,
+                          onTap: () => userDetails.isUserInBlackList!
+                              ? BlocProvider.of<ActionBtnBloc>(context).add(
+                                  RemoveFromBlackListEvent(userDetails.code!))
+                              : BlocProvider.of<ActionBtnBloc>(context)
+                                  .add(AddToBlackListEvent(userDetails.code!)),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 body: CustomScrollView(
                   slivers: [
@@ -159,12 +168,12 @@ class DetailPage extends StatelessWidget {
                 ),
               ),
             );
-          } else if (state is UsersError) {
+          } else if (detailsState is UsersError) {
             return Scaffold(
               appBar: AppBar(title: const Text('Error')),
-              body: Center(child: Text('حصل خطأ!')),
+              body: const Center(child: Text('حصل خطأ!')),
             );
-          } else if (state is UserLoading) {
+          } else if (detailsState is UserLoading) {
             return Scaffold(
               appBar: AppBar(title: Text('User $userId Details')),
               body: const Center(child: CircularProgressIndicator()),
@@ -177,6 +186,105 @@ class DetailPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+
+  SpeedDialChild buildRequestsButton(
+      UserDetailsEntity userDetails, BuildContext context) {
+    final requestStatus = userDetails.validRequest?.status;
+    if (requestStatus == "SENT") {
+      if (userDetails.pkid == userDetails.validRequest?.senderPkid.toString()) {
+        return SpeedDialChild(
+          child: const Icon(
+            Icons.reply_all_outlined,
+            color: Colors.white,
+          ),
+          label: 'استجابة للطلب',
+          backgroundColor: Colors.lightBlue,
+          onTap: () async {
+            final result = await ConfirmationDialog.show(
+              context,
+              title: "استجابة لطلب القبول",
+              message: "هل تريد فعلا قبول هذا الطلب ؟",
+              dismissible: false,
+              actions: [
+                TextButton(
+                  onPressed: () => {
+                    // TODO: make request to reject the request
+                    Navigator.of(context).pop(false)
+                  },
+                  child: const Text("رفض الطلب"),
+                ),
+                TextButton(
+                  onPressed: () => {
+                    // TODO: make a request to accept the request
+                    BlocProvider.of<ActionBtnBloc>(context)
+                        .add(AcceptRequestEvent(userDetails.validRequest!.id)),
+                    Navigator.popAndPushNamed(context, '/chat', arguments: {
+                      'roomId': userDetails.validRequest?.chatRoom?.id,
+                    }),
+                  },
+                  child: const Text("قبول الطلب"),
+                ),
+              ],
+            );
+
+            // if (result == true) {
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     const SnackBar(content: Text("تم قبول الطلب بنجاح")),
+            //   );
+            // } else {
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     const SnackBar(content: Text("تم رفض هذا الطلب")),
+            //   );
+            // }
+          },
+        );
+      }
+      return SpeedDialChild(
+        child: const Icon(
+          Icons.lock_clock_outlined,
+          color: Colors.white,
+        ),
+        label: 'في انتظار الرد على طلبك',
+        backgroundColor: Colors.lightBlue,
+        onTap: () => {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'يجب أن تنتظر حتى يتم الرد على طلبك أو تمر 24 ساعة قبل إرسال طلب جديد')),
+          )
+        },
+      );
+    } else if (requestStatus == "ACCEPTED") {
+      return SpeedDialChild(
+        child: const Icon(
+          Icons.chat_bubble_outline,
+          color: Colors.white,
+        ),
+        label: 'دخول مرحلة الأسئلة',
+        backgroundColor: Colors.lightBlue,
+        onTap: () => {
+          Navigator.pushNamed(context, '/chat', arguments: {
+            'roomId': userDetails.validRequest?.chatRoom?.id,
+          }),
+        },
+      );
+    }
+    return SpeedDialChild(
+      child: const Icon(
+        Icons.send,
+        color: Colors.white,
+      ),
+      label: 'إرسال طلب قبول',
+      backgroundColor: Colors.lightBlue,
+      onTap: () => {
+        userDetails.validRequest != null
+            ? userDetails.requestSendingStatus == ""
+            : BlocProvider.of<ActionBtnBloc>(context)
+                .add(SendRequestEvent(userDetails.id!))
+      },
     );
   }
 }

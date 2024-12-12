@@ -18,6 +18,15 @@ class RequestSentSuccess extends ActionBtnState {
   List<Object?> get props => [result];
 }
 
+class RequestAcceptedSuccess extends ActionBtnState {
+  final String result;
+
+  RequestAcceptedSuccess(this.result);
+
+  @override
+  List<Object?> get props => [result];
+}
+
 class RequestSentFailed extends ActionBtnState {
   final String reason;
 
@@ -27,7 +36,7 @@ class RequestSentFailed extends ActionBtnState {
   List<Object?> get props => [reason];
 }
 
-class AddToFavouritesSuccess extends ActionBtnState{
+class AddToFavouritesSuccess extends ActionBtnState {
   final String result;
 
   AddToFavouritesSuccess(this.result);
@@ -35,7 +44,8 @@ class AddToFavouritesSuccess extends ActionBtnState{
   @override
   List<Object?> get props => [result];
 }
-class RemoveFromFavouritesSuccess extends ActionBtnState{
+
+class RemoveFromFavouritesSuccess extends ActionBtnState {
   final String result;
 
   RemoveFromFavouritesSuccess(this.result);
@@ -44,7 +54,7 @@ class RemoveFromFavouritesSuccess extends ActionBtnState{
   List<Object?> get props => [result];
 }
 
-class AddToBlockListSuccess extends ActionBtnState{
+class AddToBlockListSuccess extends ActionBtnState {
   final String result;
 
   AddToBlockListSuccess(this.result);
@@ -53,7 +63,7 @@ class AddToBlockListSuccess extends ActionBtnState{
   List<Object?> get props => [result];
 }
 
-class RemoveFromBlockListSuccess extends ActionBtnState{
+class RemoveFromBlockListSuccess extends ActionBtnState {
   final String result;
 
   RemoveFromBlockListSuccess(this.result);

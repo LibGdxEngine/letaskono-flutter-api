@@ -55,13 +55,16 @@ class NewWidget extends StatelessWidget {
                       );
                     },
                   )
-                : const Center(child: Text("ليس هناك محفوظات")),
+                : const Center(
+                  child: Text("ليس هناك محفوظات"),
+                ),
           );
         } else if (state is UsersError) {
           return Center(child: Text('Error: ${state.error}'));
-        } else {
-          return const Center(child: Text('...'));
         }
+        return Container(
+          child: Text('data'),
+        );
       },
     );
   }

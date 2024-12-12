@@ -1,4 +1,5 @@
 import 'package:letaskono_flutter/features/users/data/data_sources/user_remote_data_source.dart';
+import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/repositories/user_repository.dart';
 
@@ -13,9 +14,11 @@ class UserRepositoryImpl extends UserRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<UserEntity>> fetchUsers({int page = 1}) async {
+  Future<List<UserEntity>> fetchUsers(
+      {int page = 1, SearchEntity? query}) async {
     // Fetch users from the remote data source
-    final List<User> users = await remoteDataSource.fetchUsers(page: page);
+    final List<User> users =
+        await remoteDataSource.fetchUsers(page: page, query: query);
 
     // Map User models to UserEntity
     return users.map((user) => _mapUserToEntity(user)).toList();
@@ -61,9 +64,21 @@ class UserRepositoryImpl extends UserRepository {
     return await remoteDataSource.removeFromBlacklist(userCode);
   }
 
+  @override
+  Future<String> acceptRequest(int requestId) async {
+    return await remoteDataSource.acceptRequest(requestId);
+  }
+
+  @override
+  Future<String> rejectRequest(int requestId) async {
+    return await remoteDataSource.rejectRequest(requestId);
+  }
+
   UserDetailsEntity _mapUserDetailToEntity(UserDetails user) {
+
     return UserDetailsEntity(
       id: user.id,
+      pkid: user.pkid,
       preferredCountry: user.profile.preferredCountry,
       azkar: user.profile.azkar,
       prayerFrequency: user.profile.prayerFrequency,
@@ -98,8 +113,8 @@ class UserRepositoryImpl extends UserRepository {
       memorizedQuranParts: user.profile.memorizedQuranParts,
       isOnline: user.profile.isOnline,
       isUserInBlackList: user.isUserInBlackList,
-      isUserSentMeValidRequest: user.isUserSentMeValidRequest,
       isUserInFollowingList: user.isUserInFollowingList,
+      validRequest: user.validRequest,
     );
   }
 

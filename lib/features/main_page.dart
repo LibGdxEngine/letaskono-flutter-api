@@ -4,6 +4,8 @@ import 'package:letaskono_flutter/features/requests/presentation/pages/requests_
 import 'package:letaskono_flutter/features/users/presentation/pages/favourites_page.dart';
 import 'package:letaskono_flutter/features/users/presentation/pages/home_page.dart';
 
+
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      endDrawer: Drawer(
+      drawer: Drawer(
         child: ListView(
           children: [
             const DrawerHeader(child: Text('Name')),

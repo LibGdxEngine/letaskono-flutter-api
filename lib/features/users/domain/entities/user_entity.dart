@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class UserEntity extends Equatable {
+class UserEntity {
   final String id;
   final String name;
   final String code;
@@ -30,23 +28,6 @@ class UserEntity extends Equatable {
     required this.lastSeen,
     required this.dateJoined,
   });
-
-  @override
-  List<Object> get props => [
-        id,
-        name,
-        code,
-        educationLevel,
-        profession,
-        age,
-        height,
-        weight,
-        country,
-        maritalStatus,
-        gender,
-        lastSeen,
-        dateJoined,
-      ];
 
   // Factory constructor for creating a UserEntity from JSON
   factory UserEntity.fromJson(Map<String, dynamic> json) {

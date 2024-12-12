@@ -8,9 +8,9 @@ class UsersList extends StatefulWidget {
   final bool isFavourite;
 
   const UsersList({
-    super.key,
+    Key? key,
     required this.isFavourite,
-  });
+  }) : super(key: key);
 
   @override
   State<UsersList> createState() => _UsersListState();
@@ -47,10 +47,8 @@ class _UsersListState extends State<UsersList> {
           return const Center(child: CircularProgressIndicator());
         } else if (state is UsersError) {
           return Center(child: Text(state.error));
-        } else if (state is UsersLoaded || state is UserLoadingMore) {
-          final users = state is UsersLoaded
-              ? state.users
-              : (state as UserLoadingMore).users;
+        } else if (state is UsersLoaded) {
+          var users = state.users;
           return RefreshIndicator(
             onRefresh: () async {
               context.read<UserBloc>().add(widget.isFavourite
@@ -63,26 +61,64 @@ class _UsersListState extends State<UsersList> {
                       isRefreshing: true,
                     ));
             },
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: users.length + (state is UserLoadingMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index >= users.length) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/userDetail',
-                      arguments:
-                          users[index].code, // Pass the 'id' as an argument
-                    );
-                  },
-                  child: UserCard(user: users[index]),
-                );
-              },
-            ),
+            child: users.isNotEmpty
+                ? ListView.builder(
+                    key: ValueKey(state.users.hashCode),
+                    controller: _scrollController,
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      if (index >= users.length) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/userDetail',
+                            arguments: users[index]
+                                .code, // Pass the 'id' as an argument
+                          );
+                        },
+                        child: UserCard(user: users[index]),
+                      );
+                    },
+                  )
+                : Center(
+                    child: widget.isFavourite
+                        ? const Text("ليس هناك محفوظات")
+                        : const Text("ليس هناك مستخدمين"),
+                  ),
+          );
+        } else if (state is UserLoadingMore) {
+          var users = state.users;
+          return Container(
+            child: users.isNotEmpty
+                ? ListView.builder(
+                    key: ValueKey(state.users.hashCode),
+                    controller: _scrollController,
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      if (index >= users.length) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/userDetail',
+                            arguments: users[index]
+                                .code, // Pass the 'id' as an argument
+                          );
+                        },
+                        child: UserCard(user: users[index]),
+                      );
+                    },
+                  )
+                : Center(
+                    child: widget.isFavourite
+                        ? const Text("ليس هناك محفوظات")
+                        : const Text("ليس هناك مستخدمين"),
+                  ),
           );
         } else if (state is UsersError) {
           return Center(child: Text('Error: ${state.error}'));

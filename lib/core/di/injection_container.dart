@@ -5,6 +5,12 @@ import 'package:letaskono_flutter/features/auth/data/data_sources/auth_remote_da
 import 'package:letaskono_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:letaskono_flutter/features/auth/domain/use_cases/password_reset.dart';
 import 'package:letaskono_flutter/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:letaskono_flutter/features/chat/data/data_sources/chat_remote_data_source.dart';
+import 'package:letaskono_flutter/features/chat/data/repository/chat_repository_impl.dart';
+import 'package:letaskono_flutter/features/chat/domain/repository/chat_repository.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/connect_to_chat.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/disconnect_from_chat.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/load_messages.dart';
 import 'package:letaskono_flutter/features/notifications/data/data_sources/notifications_remote_data_source.dart';
 import 'package:letaskono_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:letaskono_flutter/features/notifications/domain/repositories/notification_repository.dart';
@@ -16,6 +22,7 @@ import 'package:letaskono_flutter/features/requests/domain/use_cases/fetch_reque
 import 'package:letaskono_flutter/features/users/data/data_sources/user_remote_data_source.dart';
 import 'package:letaskono_flutter/features/users/data/repositories/user_repository_impl.dart';
 import 'package:letaskono_flutter/features/users/domain/repositories/user_repository.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/accept_request.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_favourites.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_favourites.dart';
@@ -38,7 +45,6 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   // Register Dio client
-
   sl.registerLazySingleton(() => Dio());
 
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -57,6 +63,12 @@ Future<void> init() async {
       () => RequestsRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
   sl.registerLazySingleton<NotificationRemoteDataSource>(
       () => NotificationRemoteDataSourceImpl(httpClient: sl(), prefs: sl()));
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(
+      httpClient: sl(),
+      prefs: sl(),
+    ),
+  );
 
   // Register Repository Implementations
   sl.registerLazySingleton<AuthRepository>(
@@ -79,11 +91,17 @@ Future<void> init() async {
         remoteDataSource:
             sl()), // Provide the remote data source to the repository
   );
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(
+        remoteDataSource:
+            sl()), // Provide the remote data source to the repository
+  );
 
   // Repositories
   sl.registerLazySingleton(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton(() => UserRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton(() => RequestRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton(() => ChatRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton(
       () => NotificationRepositoryImpl(remoteDataSource: sl()));
 
@@ -94,18 +112,20 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PasswordVerify(sl()));
   sl.registerLazySingleton(() => ConfirmAccount(sl()));
   sl.registerLazySingleton(() => CompleteProfile(sl()));
-
   sl.registerLazySingleton(() => FetchUsers(sl()));
   sl.registerLazySingleton(() => FetchRequests(sl()));
   sl.registerLazySingleton(() => FetchFavourites(sl()));
   sl.registerLazySingleton(() => FetchUserDetails(sl()));
   sl.registerLazySingleton(() => SendRequest(sl()));
+  sl.registerLazySingleton(() => AcceptRequest(sl()));
   sl.registerLazySingleton(() => AddToFavourites(sl()));
   sl.registerLazySingleton(() => RemoveFromFavourites(sl()));
   sl.registerLazySingleton(() => AddToBlacklist(sl()));
   sl.registerLazySingleton(() => RemoveFromBlacklist(sl()));
-
   sl.registerLazySingleton(() => FetchNotifications(sl()));
+  sl.registerLazySingleton(() => LoadMessages(sl()));
+  sl.registerLazySingleton(() => ConnectToChat(sl()));
+  sl.registerLazySingleton(() => DisconnectFromChat(sl()));
 
   // Register Bloc
   sl.registerFactory(() => AuthBloc());

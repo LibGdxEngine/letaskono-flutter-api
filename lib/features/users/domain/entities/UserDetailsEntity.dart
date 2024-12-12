@@ -1,5 +1,8 @@
+import 'package:letaskono_flutter/features/users/data/models/AcceptanceRequest.dart';
+
 class UserDetailsEntity {
   final String? id;
+  final String? pkid;
   final String? code;
   final String? fcmToken;
   final String? gender;
@@ -53,11 +56,12 @@ class UserDetailsEntity {
   final bool? isOnline;
   final DateTime? lastSeen;
   bool? isUserInFollowingList;
-  final bool? isUserSentMeValidRequest;
   bool? isUserInBlackList;
+  final AcceptanceRequest? validRequest;
 
   UserDetailsEntity({
     this.id,
+    this.pkid,
     this.code,
     this.fcmToken,
     this.gender,
@@ -112,76 +116,77 @@ class UserDetailsEntity {
     this.lastSeen,
     this.isUserInFollowingList,
     this.isUserInBlackList,
-    this.isUserSentMeValidRequest,
+    this.validRequest,
   });
 
   // Factory constructor to create UserDetailsEntity object from JSON
   factory UserDetailsEntity.fromJson(Map<String, dynamic> json) {
     return UserDetailsEntity(
-      id: json['id'],
-      code: json['code'],
-      fcmToken: json['fcm_token'],
-      gender: json['gender'],
-      age: json['age'],
-      country: json['country'],
-      state: json['state'],
-      city: json['city'],
-      phoneNumber: json['phone_number'],
-      fathersPhone: json['fathers_phone'],
-      educationLevel: json['education_level'],
-      profession: json['profession'],
-      maritalStatus: json['marital_status'],
-      children: json['children'],
-      numberOfChildBoys: json['number_of_child_boys'],
-      numberOfChildGirls: json['number_of_child_girls'],
-      height: json['height'],
-      weight: json['weight'],
-      skinColor: json['skin_color'],
-      aboutMe: json['about_me'],
-      azkar: json['azkar'],
-      hijab: json['hijab'],
-      prayerFrequency: json['prayer_frequency'],
-      memorizedQuranParts: json['memorized_quran_parts'],
-      relationWithFamily: json['relation_with_family'],
-      islamicMarriage: json['islamic_marriage'],
-      whoDoYouListenTo: json['who_do_you_listen_to'],
-      doAcquireKnowledge: json['do_acquire_knowledge'],
-      doYouRelateToHizb: json['do_you_relate_to_hizb'],
-      fatherAlive: json['father_alive'],
-      motherAlive: json['mother_alive'],
-      fatherOccupation: json['father_occupation'],
-      motherOccupation: json['mother_occupation'],
-      numberOfBrothers: json['number_of_brothers'],
-      numberOfSisters: json['number_of_sisters'],
-      lookingFor: json['looking_for'],
-      preferredAgeRange: json['preferred_age_range'],
-      preferredCountry: json['preferred_country'],
-      hobbies: json['hobbies'],
-      languagesSpoken: json['languages_spoken'],
-      wantQaima: json['want_qaima'],
-      fatherAcceptMarriageWithoutQaima:
-          json['father_accept_marriage_without_qaima'],
-      fatherKnowAboutThisWebsite: json['father_know_about_this_website'],
-      requestSendingStatus: json['request_sending_status'],
-      isBlocked: json['is_blocked'],
-      blockUntil: DateTime.parse(json['block_until']),
-      blockingReason: json['blocking_reason'],
-      isDisabled: json['is_disabled'],
-      scheduledDeletion: DateTime.parse(json['scheduled_deletion']),
-      isAccountConfirmed: json['is_account_confirmed'],
-      accountRejectionReason: json['account_rejection_reason'],
-      isOnline: json['is_online'],
-      lastSeen: DateTime.parse(json['last_seen']),
-      isUserSentMeValidRequest: json['is_user_sent_me_valid_request'],
-      isUserInBlackList: json['is_user_in_black_list'],
-      isUserInFollowingList: json['is_user_in_following_list'],
-    );
+        id: json['id'],
+        pkid: json['pkid'],
+        code: json['code'],
+        fcmToken: json['fcm_token'],
+        gender: json['gender'],
+        age: json['age'],
+        country: json['country'],
+        state: json['state'],
+        city: json['city'],
+        phoneNumber: json['phone_number'],
+        fathersPhone: json['fathers_phone'],
+        educationLevel: json['education_level'],
+        profession: json['profession'],
+        maritalStatus: json['marital_status'],
+        children: json['children'],
+        numberOfChildBoys: json['number_of_child_boys'],
+        numberOfChildGirls: json['number_of_child_girls'],
+        height: json['height'],
+        weight: json['weight'],
+        skinColor: json['skin_color'],
+        aboutMe: json['about_me'],
+        azkar: json['azkar'],
+        hijab: json['hijab'],
+        prayerFrequency: json['prayer_frequency'],
+        memorizedQuranParts: json['memorized_quran_parts'],
+        relationWithFamily: json['relation_with_family'],
+        islamicMarriage: json['islamic_marriage'],
+        whoDoYouListenTo: json['who_do_you_listen_to'],
+        doAcquireKnowledge: json['do_acquire_knowledge'],
+        doYouRelateToHizb: json['do_you_relate_to_hizb'],
+        fatherAlive: json['father_alive'],
+        motherAlive: json['mother_alive'],
+        fatherOccupation: json['father_occupation'],
+        motherOccupation: json['mother_occupation'],
+        numberOfBrothers: json['number_of_brothers'],
+        numberOfSisters: json['number_of_sisters'],
+        lookingFor: json['looking_for'],
+        preferredAgeRange: json['preferred_age_range'],
+        preferredCountry: json['preferred_country'],
+        hobbies: json['hobbies'],
+        languagesSpoken: json['languages_spoken'],
+        wantQaima: json['want_qaima'],
+        fatherAcceptMarriageWithoutQaima:
+            json['father_accept_marriage_without_qaima'],
+        fatherKnowAboutThisWebsite: json['father_know_about_this_website'],
+        requestSendingStatus: json['request_sending_status'],
+        isBlocked: json['is_blocked'],
+        blockUntil: DateTime.parse(json['block_until']),
+        blockingReason: json['blocking_reason'],
+        isDisabled: json['is_disabled'],
+        scheduledDeletion: DateTime.parse(json['scheduled_deletion']),
+        isAccountConfirmed: json['is_account_confirmed'],
+        accountRejectionReason: json['account_rejection_reason'],
+        isOnline: json['is_online'],
+        lastSeen: DateTime.parse(json['last_seen']),
+        isUserInBlackList: json['is_user_in_black_list'],
+        isUserInFollowingList: json['is_user_in_following_list'],
+        validRequest: json['valid_request']);
   }
 
   // Convert UserDetailsEntity object to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'pkid': pkid,
       'code': code,
       'fcm_token': fcmToken,
       'gender': gender,
@@ -234,9 +239,10 @@ class UserDetailsEntity {
       'account_rejection_reason': accountRejectionReason,
       'is_online': isOnline,
       'last_seen': lastSeen?.toIso8601String(),
-      'is_user_sent_me_valid_request': isUserSentMeValidRequest,
       'is_user_in_black_list': isUserInBlackList,
       'is_user_in_following_list': isUserInFollowingList,
+      'valid_request_id': validRequest?.id,
+      'valid_request_status': validRequest?.status,
     };
   }
 }

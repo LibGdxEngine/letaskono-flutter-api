@@ -155,21 +155,22 @@ class Profile {
       preferredCountry: json['preferred_country'],
       hobbies: json['hobbies'],
       languagesSpoken: json['languages_spoken'],
-      wantQaima: json['want_qaima'],
+      // wantQaima: json['want_qaima'],
       // fatherAcceptMarriageWithoutQaima:
       //     json['father_accept_marriage_without_qaima'],
       // fatherKnowAboutThisWebsite: json['father_know_about_this_website'],
       // requestSendingStatus: json['request_sending_status'],
-      isBlocked: json['is_blocked'],
+      // isBlocked: json['is_blocked'],
       // blockUntil: DateTime.parse(json['block_until']),
       // blockingReason: json['blocking_reason'],
-      isDisabled: json['is_disabled'],
+      // isDisabled: json['is_disabled'],
       // scheduledDeletion: DateTime.parse(json['scheduled_deletion']),
-      isAccountConfirmed: json['is_account_confirmed'],
+      // isAccountConfirmed: json['is_account_confirmed'],
       // accountRejectionReason: json['account_rejection_reason'],
       isOnline: json['is_online'],
       lastSeen: DateTime.parse(json['last_seen']),
     );
+
   }
 
   // Convert Profile object to JSON

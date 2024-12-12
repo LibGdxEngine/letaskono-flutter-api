@@ -12,6 +12,18 @@ class SendRequestEvent extends ActionBtnEvent {
   SendRequestEvent(this.userCode);
 }
 
+class AcceptRequestEvent extends ActionBtnEvent {
+  final int requestId;
+
+  AcceptRequestEvent(this.requestId);
+}
+
+class RejectRequestEvent extends ActionBtnEvent {
+  final int requestId;
+
+  RejectRequestEvent(this.requestId);
+}
+
 class AddToFavouritesEvent extends ActionBtnEvent {
   final String userCode;
 

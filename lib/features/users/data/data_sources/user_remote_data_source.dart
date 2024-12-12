@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/http_client.dart';
@@ -8,7 +9,7 @@ import '../models/user.dart';
 import '../models/user_details.dart';
 
 abstract class UserRemoteDataSource {
-  Future<List<User>> fetchUsers({int page});
+  Future<List<User>> fetchUsers({int page, SearchEntity? query});
 
   Future<List<User>> fetchFavourites({required int page});
 
@@ -23,6 +24,10 @@ abstract class UserRemoteDataSource {
   Future<String> addToBlacklist(String userCode);
 
   Future<String> removeFromBlacklist(String userCode);
+
+  Future<String> acceptRequest(int requestId);
+
+  Future<String> rejectRequest(int requestId);
 }
 
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
@@ -32,12 +37,12 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   UserRemoteDataSourceImpl({required this.httpClient, required this.prefs});
 
   @override
-  Future<List<User>> fetchUsers({int page = 1}) async {
+  Future<List<User>> fetchUsers({int page = 1, query}) async {
     String? token = prefs.getString('auth_token');
 
     try {
       final response = await httpClient.get(
-        'api/v1/users/account/?page=$page',
+        'api/v1/users/account/?page=$page${query != null ? "&${query.toString()}" : ""}',
         headers: {
           "Authorization": "Token ${token}",
           "Content-Type": "application/json",
@@ -185,5 +190,28 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       }
       throw Exception(e);
     }
+  }
+
+  @override
+  Future<String> acceptRequest(int requestId) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/requests/acceptance_requests/$requestId/accept_request/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data.toString());
+    }
+  }
+
+  @override
+  Future<String> rejectRequest(int requestId) {
+    // TODO: implement rejectRequest
+    throw UnimplementedError();
   }
 }

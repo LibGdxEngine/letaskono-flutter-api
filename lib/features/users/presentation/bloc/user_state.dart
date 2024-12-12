@@ -1,9 +1,6 @@
 part of 'user_bloc.dart';
 
-abstract class UserState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class UserState {}
 
 class UsersInitial extends UserState {}
 
@@ -17,34 +14,30 @@ class UsersLoaded extends UserState {
   UsersLoaded(this.users, this.currentPage, this.hasMore);
 
   @override
-  List<Object?> get props => [users, currentPage, hasMore];
-}
-
-class UserLoadingMore extends UserState {
-  final List<UserEntity> users;
-  final int currentPage;
-  final bool hasMore;
-
-  UserLoadingMore(this.users, this.currentPage, this.hasMore);
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UsersLoaded &&
+          runtimeType == other.runtimeType &&
+          users == other.users &&
+          currentPage == other.currentPage &&
+          hasMore == other.hasMore;
 
   @override
-  List<Object> get props => [users, currentPage, hasMore];
+  int get hashCode => Object.hash(users, currentPage, hasMore);
+}
+
+class UserLoadingMore extends UsersLoaded {
+  UserLoadingMore(super.users, super.currentPage, super.hasMore);
 }
 
 class UserDetailsLoaded extends UserState {
   final UserDetailsEntity user;
 
   UserDetailsLoaded(this.user);
-
-  @override
-  List<Object?> get props => [user];
 }
 
 class UsersError extends UserState {
   final String error;
 
   UsersError(this.error);
-
-  @override
-  List<Object?> get props => [error];
 }

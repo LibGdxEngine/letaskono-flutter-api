@@ -1,9 +1,10 @@
-import 'dart:convert';
+import 'package:letaskono_flutter/features/users/data/models/AcceptanceRequest.dart';
 
 import 'Profile.dart';
 
 class UserDetails {
   final String id;
+  final String pkid;
   final String email;
   final String firstName;
   final String lastName;
@@ -11,11 +12,12 @@ class UserDetails {
   final bool isActive;
   final bool emailConfirmed;
   final bool isUserInFollowingList;
-  final bool isUserSentMeValidRequest;
   final bool isUserInBlackList;
+  final AcceptanceRequest? validRequest;
 
   UserDetails({
     required this.id,
+    required this.pkid,
     required this.email,
     required this.firstName,
     required this.lastName,
@@ -24,36 +26,41 @@ class UserDetails {
     required this.emailConfirmed,
     required this.isUserInFollowingList,
     required this.isUserInBlackList,
-    required this.isUserSentMeValidRequest,
+    this.validRequest,
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) {
+
     return UserDetails(
       id: json['id'],
+      pkid: json['pkid'].toString(),
       email: json['email'],
       firstName: json['first_name'],
       lastName: json['last_name'],
       profile: Profile.fromJson(json['profile']),
       isActive: json['is_active'],
       emailConfirmed: json['email_confirmed'],
-      isUserSentMeValidRequest: json['is_user_sent_me_valid_request'],
       isUserInBlackList: json['is_user_in_black_list'],
       isUserInFollowingList: json['is_user_in_following_list'],
+      validRequest: json['valid_request'] != null
+          ? AcceptanceRequest.fromJson(json['valid_request'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'pkid': pkid,
       'email': email,
       'first_name': firstName,
       'last_name': lastName,
       'profile': profile.toJson(),
       'is_active': isActive,
       'email_confirmed': emailConfirmed,
-      'is_user_sent_me_valid_request': isUserSentMeValidRequest,
       'is_user_in_black_list': isUserInBlackList,
       'is_user_in_following_list': isUserInFollowingList,
+      'valid_request': validRequest,
     };
   }
 }
