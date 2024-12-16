@@ -6,4 +6,6 @@ abstract class ChatRepository {
   Stream<dynamic> connectToChat(String roomId);
 
   void dispose();
+
+  void sendMessage(ChatMessageEntity message,int roomId);
 }

@@ -23,6 +23,16 @@ class WebSocketError extends WebSocketState {
   List<Object> get props => [error];
 }
 
+class MessageLimitReached extends WebSocketState {
+  final String message;
+
+  MessageLimitReached(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+
 class WebSocketMessageReceived extends WebSocketState {
   final ChatMessageEntity message;
 

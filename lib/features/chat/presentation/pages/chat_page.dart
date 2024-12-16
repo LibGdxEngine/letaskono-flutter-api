@@ -6,9 +6,14 @@ import '../bloc/chat_bloc.dart';
 import '../widgets/MessageBubble.dart';
 
 class ChatPage extends StatefulWidget {
-  final int? roomId;
+  final int? roomId, senderId, receiverId;
 
-  const ChatPage({super.key, required this.roomId});
+  const ChatPage({
+    super.key,
+    required this.roomId,
+    required this.senderId,
+    required this.receiverId,
+  });
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -63,66 +68,69 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage(String userType) {
-    if (_messageController.text.trim().isEmpty) return;
-
+    if (_messageController.text.trim().isEmpty ||
+        senderMessageCount <= 0 ||
+        receiverMessageCount <= 0) return;
+    late ChatMessageEntity message;
     setState(() {
       if (userType == 'sender' && senderMessageCount > 0) {
-        messages.add(ChatMessageEntity(
+        message = ChatMessageEntity(
           id: DateTime.now().millisecondsSinceEpoch,
           content: _messageController.text.trim(),
-          senderId: 1,
+          senderId: widget.senderId!,
           type: 'sender',
           timestamp: DateTime.now().toIso8601String(),
           isRead: false,
-        ));
+        );
         senderMessageCount--;
       } else if (userType == 'receiver' && receiverMessageCount > 0) {
-        messages.add(ChatMessageEntity(
+        message = ChatMessageEntity(
           id: DateTime.now().millisecondsSinceEpoch,
           content: _messageController.text.trim(),
-          senderId: 2,
+          senderId: widget.receiverId!,
           type: 'receiver',
           timestamp: DateTime.now().toIso8601String(),
           isRead: false,
-        ));
+        );
         receiverMessageCount--;
       }
     });
 
+    BlocProvider.of<WebSocketBloc>(context, listen: false)
+        .add(SendMessageEvent(message, widget.roomId!));
     _messageController.clear();
   }
 
   Widget _buildMessage(ChatMessageEntity message) {
-    switch (message.type) {
-      case 'sender':
-        return Align(
-          alignment: Alignment.centerRight,
-          child: MessageBubble(
-            text: message.content,
-            backgroundColor: Colors.blueAccent,
-            textColor: Colors.white,
-          ),
-        );
-      case 'receiver':
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: MessageBubble(
-            text: message.content,
-            backgroundColor: Colors.grey[300]!,
-            textColor: Colors.black,
-          ),
-        );
-      case 'admin':
-        return Center(
-          child: MessageBubble(
-            text: message.content,
-            backgroundColor: Colors.orange[300]!,
-            textColor: Colors.white,
-            isBold: true,
-          ),
-        );
-      default:
-        return const SizedBox.shrink();
+    final messageId = message.senderId;
+    if (message.type == "admin") {
+      return Center(
+        child: MessageBubble(
+          text: message.content,
+          backgroundColor: Colors.orange[300]!,
+          textColor: Colors.white,
+          isBold: true,
+        ),
+      );
+    }
+    if (messageId == widget.senderId) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: MessageBubble(
+          text: message.content,
+          backgroundColor: Colors.blueAccent,
+          textColor: Colors.white,
+        ),
+      );
+    } else {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: MessageBubble(
+          text: message.content,
+          backgroundColor: Colors.grey[300]!,
+          textColor: Colors.black,
+        ),
+      );
     }
   }
 
@@ -138,11 +146,15 @@ class _ChatPageState extends State<ChatPage> {
         if (state is WebSocketMessageReceived) {
           messages.add(state.message);
           _scrollToBottom();
-        } else if (state is DisconnectWebSocket) {
+        } else if (state is WebSocketDisconnected) {
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text("إلفاء الاتصال")),
+          // );
+        } else if (state is MessageLimitReached) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("إلفاء الاتصال")),
+            const SnackBar(content: Text("وصلت للحد الأقصى من الرسائل")),
           );
-        } else if (state is WebSocketDisconnected) {}
+        }
       },
       builder: (context, state) {
         return Column(
@@ -211,11 +223,4 @@ class _ChatPageState extends State<ChatPage> {
     BlocProvider.of<WebSocketBloc>(context, listen: false)
         .add(DisconnectWebSocket());
   }
-// @override
-// void dispose() {
-//   _scrollController.dispose();
-//   final webSocketBloc = BlocProvider.of<WebSocketBloc>(context, listen: false);
-//   webSocketBloc.add(DisconnectWebSocket());
-//   super.dispose();
-// }
 }

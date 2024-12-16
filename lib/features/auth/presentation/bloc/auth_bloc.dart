@@ -59,7 +59,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         // Handle sign in logic
         String token = await signInUseCase.call(event.email, event.password);
-        print(token);
         await prefs.setString('auth_token', token);
         emit(AuthSuccess()); // Emit success state
       } catch (error) {

@@ -11,6 +11,7 @@ import 'package:letaskono_flutter/features/chat/domain/repository/chat_repositor
 import 'package:letaskono_flutter/features/chat/domain/use_cases/connect_to_chat.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/disconnect_from_chat.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/load_messages.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/send_message.dart';
 import 'package:letaskono_flutter/features/notifications/data/data_sources/notifications_remote_data_source.dart';
 import 'package:letaskono_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:letaskono_flutter/features/notifications/domain/repositories/notification_repository.dart';
@@ -29,6 +30,7 @@ import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_favourit
 
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_user_details.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_users.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/reject_request.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_favourites.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/send_request.dart';
@@ -118,6 +120,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchUserDetails(sl()));
   sl.registerLazySingleton(() => SendRequest(sl()));
   sl.registerLazySingleton(() => AcceptRequest(sl()));
+  sl.registerLazySingleton(() => RejectRequest(sl()));
   sl.registerLazySingleton(() => AddToFavourites(sl()));
   sl.registerLazySingleton(() => RemoveFromFavourites(sl()));
   sl.registerLazySingleton(() => AddToBlacklist(sl()));
@@ -125,6 +128,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchNotifications(sl()));
   sl.registerLazySingleton(() => LoadMessages(sl()));
   sl.registerLazySingleton(() => ConnectToChat(sl()));
+  sl.registerLazySingleton(() => SendMessage(sl()));
   sl.registerLazySingleton(() => DisconnectFromChat(sl()));
 
   // Register Bloc

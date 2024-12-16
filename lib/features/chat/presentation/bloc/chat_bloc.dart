@@ -9,6 +9,7 @@ import 'package:equatable/equatable.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart';
 
 import '../../domain/use_cases/connect_to_chat.dart';
+import '../../domain/use_cases/send_message.dart';
 
 part 'chat_event.dart';
 
@@ -18,13 +19,15 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   WebSocketChannel? _channel;
   final LoadMessages loadMessagesUseCase = sl<LoadMessages>();
   final ConnectToChat connectToChatUseCase = sl<ConnectToChat>();
+  final SendMessage sendMessageUseCase = sl<SendMessage>();
   final DisconnectFromChat disconnectFromChatUseCase = sl<DisconnectFromChat>();
 
   WebSocketBloc() : super(WebSocketInitial()) {
     on<ConnectWebSocket>(_onConnect);
     on<DisconnectWebSocket>(_onDisconnect);
-    on<SendMessage>(_onSendMessage);
+    on<SendMessageEvent>(_onSendMessage);
     on<ReceiveMessage>(_onReceiveMessage);
+    on<ReachMessageLimit>(_onMessageLimitReached);
   }
 
   Future<void> _onConnect(event, emit) async {
@@ -33,7 +36,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       final List<ChatMessageEntity> loadedMessages =
           await loadMessagesUseCase(event.roomId);
       for (final message in loadedMessages) {
-        emit(WebSocketMessageReceived(message));
+        add(ReceiveMessage(message));
       }
       final channel = connectToChatUseCase(event.roomId.toString());
       emit(WebSocketConnected());
@@ -41,7 +44,12 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       channel.listen(
         (message) {
           final messageAsJson = jsonDecode(message);
-          add(ReceiveMessage(ChatMessageEntity.fromJson(messageAsJson)));
+          if (messageAsJson.containsKey('error')) {
+            add(ReachMessageLimit(messageAsJson['error']));
+          } else {
+            // Add the message to the bloc
+            add(ReceiveMessage(ChatMessageEntity.fromJson(messageAsJson)));
+          }
         },
         onDone: () => add(DisconnectWebSocket()),
         onError: (error) => add(DisconnectWebSocket()),
@@ -61,9 +69,11 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   }
 
   Future<void> _onSendMessage(event, emit) async {
-    if (_channel != null) {
-      _channel?.sink.add(jsonEncode({'message': event.content}));
-    }
+    sendMessageUseCase(event.message, event.roomId);
+  }
+
+  Future<void> _onMessageLimitReached(event, emit) async {
+    emit(MessageLimitReached(event.message));
   }
 
   @override

@@ -36,4 +36,9 @@ class ChatRepositoryImpl extends ChatRepository {
   void dispose() {
     return remoteDataSource.dispose();
   }
+
+  @override
+  void sendMessage(ChatMessageEntity message, int roomId) {
+    remoteDataSource.sendMessage(message, roomId);
+  }
 }

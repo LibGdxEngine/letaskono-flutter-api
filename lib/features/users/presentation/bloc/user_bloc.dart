@@ -96,8 +96,8 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
 
     on<ApplyFiltersEvent>((event, emit) async {
       emit(UserLoading());
-      await prefs.setString('filter_age_min', event.ageMin.toString());
-      await prefs.setString('filter_age_max', event.ageMax.toString());
+      await prefs.setDouble('filter_age_min', event.ageMin.toDouble());
+      await prefs.setDouble('filter_age_max', event.ageMax.toDouble());
       await prefs.setString('filter_marital_status', event.maritalStatus);
       await prefs.setString('ordering', event.ordering);
 

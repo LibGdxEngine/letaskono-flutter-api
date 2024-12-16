@@ -27,6 +27,17 @@ class RequestAcceptedSuccess extends ActionBtnState {
   List<Object?> get props => [result];
 }
 
+class RequestRejectedSuccess extends ActionBtnState {
+  final String result;
+
+  RequestRejectedSuccess(this.result);
+
+  @override
+  List<Object?> get props => [result];
+}
+
+
+
 class RequestSentFailed extends ActionBtnState {
   final String reason;
 

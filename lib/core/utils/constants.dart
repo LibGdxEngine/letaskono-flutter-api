@@ -1,5 +1,5 @@
 class Constants {
-  static String get baseUrl => "172.17.96.1";
+  static String get baseUrl => "172.20.0.1";
 
   static Map<String, List<String>> countryStateMap = {
     'مصر': [

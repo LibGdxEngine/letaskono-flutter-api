@@ -4,9 +4,14 @@ import 'package:letaskono_flutter/features/chat/presentation/bloc/chat_bloc.dart
 import 'package:letaskono_flutter/features/chat/presentation/pages/chat_page.dart';
 
 class ChatMain extends StatefulWidget {
-  final int? roomId;
+  final int? roomId, senderId, receiverId;
 
-  const ChatMain({super.key, required this.roomId});
+  const ChatMain({
+    super.key,
+    required this.roomId,
+    required this.senderId,
+    required this.receiverId,
+  });
 
   @override
   State<ChatMain> createState() => _ChatMainState();
@@ -20,7 +25,11 @@ class _ChatMainState extends State<ChatMain> {
           WebSocketBloc()..add(ConnectWebSocket(widget.roomId!)),
       child: Scaffold(
         appBar: AppBar(title: const Text('Chat')),
-        body: ChatPage(roomId: widget.roomId),
+        body: ChatPage(
+          roomId: widget.roomId,
+          senderId: widget.senderId,
+          receiverId: widget.receiverId,
+        ),
       ),
     );
   }

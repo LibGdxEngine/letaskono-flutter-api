@@ -111,6 +111,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<String> signIn(String email, String password) async {
+    print('Hello');
     try {
       final response = await httpClient.post(
         'api/v1/users/login/',
@@ -119,13 +120,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
         },
       );
-
+      print(response.statusCode);
+      print(response.data);
       if (!_isSuccessStatusCode(response.statusCode)) {
         throw AuthException('Login failed');
       }
       Map<String, dynamic> responseMap = jsonDecode(response.toString());
       return responseMap['token'];
     } on DioException catch (e) {
+      print(e);
       throw _handleError(e);
     }
   }

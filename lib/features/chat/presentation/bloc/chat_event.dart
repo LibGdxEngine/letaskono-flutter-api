@@ -13,19 +13,29 @@ class ConnectWebSocket extends WebSocketEvent {
 
 class DisconnectWebSocket extends WebSocketEvent {}
 
-class SendMessage extends WebSocketEvent {
-  final String message;
+class SendMessageEvent extends WebSocketEvent {
+  final ChatMessageEntity message;
+  final int roomId;
 
-  SendMessage(this.message);
+  SendMessageEvent(this.message, this.roomId);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, roomId];
 }
 
 class ReceiveMessage extends WebSocketEvent {
   final ChatMessageEntity message;
 
   ReceiveMessage(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class ReachMessageLimit extends WebSocketEvent {
+  final String message;
+
+  ReachMessageLimit(this.message);
 
   @override
   List<Object> get props => [message];

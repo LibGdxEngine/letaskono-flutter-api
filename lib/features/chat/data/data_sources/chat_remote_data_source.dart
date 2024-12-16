@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:letaskono_flutter/core/utils/constants.dart';
+import 'package:letaskono_flutter/features/chat/domain/enitity/chat_message_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -11,7 +12,7 @@ import '../models/chat_message.dart';
 abstract class ChatRemoteDataSource {
   Future<List<ChatMessage>> loadMessages(int roomId);
 
-  void sendMessage(String message, int senderId, String roomId);
+  void sendMessage(ChatMessageEntity message, int roomId);
 
   void dispose();
 
@@ -40,12 +41,14 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
   }
 
   @override
-  void sendMessage(String message, int senderId, String chatRoomId) {
+  void sendMessage(ChatMessageEntity message, int roomId) {
     final payload = {
-      "message": message,
-      "sender_id": senderId,
-      "chat_room_id": chatRoomId,
+      "content": message.content,
+      "sender": message.senderId,
+      "chat_room_id": roomId,
+      "type": message.type,
     };
+    print(payload);
     channel!.sink.add(jsonEncode(payload));
   }
 

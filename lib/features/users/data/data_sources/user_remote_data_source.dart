@@ -210,8 +210,19 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   }
 
   @override
-  Future<String> rejectRequest(int requestId) {
-    // TODO: implement rejectRequest
-    throw UnimplementedError();
+  Future<String> rejectRequest(int requestId) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/requests/acceptance_requests/$requestId/reject_request/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data.toString());
+    }
   }
 }

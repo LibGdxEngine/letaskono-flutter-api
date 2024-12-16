@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:letaskono_flutter/core/utils/confirmation_dialog.dart';
 import 'package:letaskono_flutter/features/chat/presentation/pages/chat_page.dart';
+import 'package:letaskono_flutter/features/users/data/models/AcceptanceRequest.dart';
 
 import '../bloc/action_btn_bloc.dart';
 import '../bloc/user_bloc.dart';
@@ -75,6 +76,11 @@ class DetailPage extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
+                    } else if (state is RequestRejectedSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.result)),
+                      );
+                      Navigator.pop(context);
                     }
                   },
                   builder: (context, state) {
@@ -82,9 +88,11 @@ class DetailPage extends StatelessWidget {
                       return CircularProgressIndicator();
                     }
                     return SpeedDial(
+                      direction: SpeedDialDirection.up,
                       animatedIcon: AnimatedIcons.menu_close,
                       overlayColor: Colors.black,
                       overlayOpacity: 0.5,
+                      switchLabelPosition: true,
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       children: [
@@ -189,10 +197,19 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-
   SpeedDialChild buildRequestsButton(
       UserDetailsEntity userDetails, BuildContext context) {
     final requestStatus = userDetails.validRequest?.status;
+    int? senderUserId, receiverUserId;
+    if (userDetails.pkid.toString() ==
+        userDetails.validRequest?.senderPkid.toString()) {
+      senderUserId = userDetails.validRequest?.senderPkid;
+      receiverUserId = userDetails.validRequest?.receiverPkid;
+    } else {
+      senderUserId = userDetails.validRequest?.receiverPkid;
+      receiverUserId = userDetails.validRequest?.senderPkid;
+    }
+
     if (requestStatus == "SENT") {
       if (userDetails.pkid == userDetails.validRequest?.senderPkid.toString()) {
         return SpeedDialChild(
@@ -211,19 +228,22 @@ class DetailPage extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => {
-                    // TODO: make request to reject the request
+                    BlocProvider.of<ActionBtnBloc>(context)
+                        .add(RejectRequestEvent(userDetails.validRequest!.id)),
                     Navigator.of(context).pop(false)
                   },
                   child: const Text("رفض الطلب"),
                 ),
                 TextButton(
                   onPressed: () => {
-                    // TODO: make a request to accept the request
                     BlocProvider.of<ActionBtnBloc>(context)
                         .add(AcceptRequestEvent(userDetails.validRequest!.id)),
-                    Navigator.popAndPushNamed(context, '/chat', arguments: {
-                      'roomId': userDetails.validRequest?.chatRoom?.id,
-                    }),
+                    // reload the page for refresh state
+                    Navigator.popAndPushNamed(context, "/userDetail",
+                        arguments: userDetails.code),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("تم قبول الطلب بنجاح")),
+                    ),
                   },
                   child: const Text("قبول الطلب"),
                 ),
@@ -268,6 +288,8 @@ class DetailPage extends StatelessWidget {
         onTap: () => {
           Navigator.pushNamed(context, '/chat', arguments: {
             'roomId': userDetails.validRequest?.chatRoom?.id,
+            'senderId': senderUserId,
+            'receiverId': receiverUserId,
           }),
         },
       );
@@ -281,10 +303,27 @@ class DetailPage extends StatelessWidget {
       backgroundColor: Colors.lightBlue,
       onTap: () => {
         userDetails.validRequest != null
-            ? userDetails.requestSendingStatus == ""
+            ? buildShowSnackBar(context, userDetails.validRequest)
             : BlocProvider.of<ActionBtnBloc>(context)
                 .add(SendRequestEvent(userDetails.id!))
       },
+    );
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> buildShowSnackBar(
+      BuildContext context, AcceptanceRequest? validRequest) {
+    String message = "";
+    if (validRequest?.status == "SENT") {
+      message = "لقد أرسلت طلب قبول مسبقا, انتظر حتى تنتهي المهلة";
+    } else if (validRequest?.status == "ACCEPTED") {
+      message = "لقد قبلت الطلب مسبقا";
+    } else if (validRequest?.status == "REJECTED") {
+      message = "لقد رفضت الطلب مسبقا";
+    } else if (validRequest?.status == "TIMED OUT") {
+      message = "لقد انتهت صلاحية هذا الطلب مسبقا";
+    }
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }
@@ -326,7 +365,7 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18.0,
           fontWeight: FontWeight.bold,
         ),
