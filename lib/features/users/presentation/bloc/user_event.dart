@@ -13,23 +13,36 @@ class FetchUsersEvent extends UsersEvent {
   FetchUsersEvent({this.page = 1, this.isRefreshing = false});
 }
 
+class RefreshFetchUsersEvent extends UsersEvent {
+  final bool isRefreshing;
+
+  RefreshFetchUsersEvent({this.isRefreshing = false});
+}
+
+
 class ApplyFiltersEvent extends UsersEvent {
-  final String maritalStatus;
-  final int ageMin;
-  final int ageMax;
-  final String ordering;
-  final List<String> countries;
-  final List<String> states;
-  final String gender;
+  final List<String>? maritalStatus;
+  final int? ageMin;
+  final int? ageMax;
+  final String? ordering;
+  final List<String>? countries;
+  final List<String>? hijabs;
+  final List<String>? le7yas;
+  final List<String>? nationalities;
+  final List<String>? states;
+  final String? gender;
 
   ApplyFiltersEvent({
-    required this.maritalStatus,
-    required this.ageMin,
-    required this.ageMax,
-    required this.ordering,
-    required this.countries,
-    required this.states,
-    required this.gender,
+    this.maritalStatus,
+    this.ageMin,
+    this.ageMax,
+    this.ordering,
+    this.countries,
+    this.hijabs,
+    this.le7yas,
+    this.nationalities,
+    this.states,
+    this.gender,
   });
 }
 

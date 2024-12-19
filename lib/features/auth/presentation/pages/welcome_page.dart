@@ -41,11 +41,12 @@ class _WelcomePageState extends State<WelcomePage> {
         statusBarIconBrightness: Brightness.light, // For white icons
       ),
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: SafeArea(
+        body: SafeArea(
+          child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FutureBuilder<List<ui.Image>>(
                       future: Future.wait([
@@ -54,7 +55,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         loadImage('assets/images/wphoto1.png'),
                         loadImage('assets/images/location_icon.png'),
                         loadImage('assets/images/photo2.png'),
-                        loadImage('assets/images/wphoto2.png'),
+                        loadImage('assets/images/photo_of_niqab_colored_woman.png'),
                         loadImage('assets/images/wphoto3.png'),
                         loadImage('assets/images/chat_icon.png'),
                       ]),
@@ -99,7 +100,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           ),
                         );
                       }),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   Center(
                     child: Text(
                       'لتسكنوا للزواج الإسلامي',
@@ -110,7 +111,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 32),
                   CustomButton(
                     text: 'تسجيل الدخول',
                     icon: 'assets/images/signin_icon.png',
@@ -132,7 +133,6 @@ class _WelcomePageState extends State<WelcomePage> {
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     textColor: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(height: 16),
                 ],
               ),
             ),

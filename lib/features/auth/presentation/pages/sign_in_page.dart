@@ -14,6 +14,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  bool _obscureText = true;
+
   // Define the controllers
   final TextEditingController emailController =
       TextEditingController(text: "ahmed1@gmail.com");
@@ -46,38 +48,42 @@ class _SignInPageState extends State<SignInPage> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Stack(children: [
-                    Positioned(
-                      child: Image.asset(
-                        'assets/images/auth_banner.png',
-                        width: 300,
-                        height: 200,
-                      ),
+                  Text(
+                    'وَمِنْ آَيَاتِهَ أَنْ خَلَقَ لَكُمْ مِنْ أَنْفُسِكُمْ أَزْوَاجَاً لِتَسْكُنُواْ إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَوَدَةً وَرَحْمَةً إِن فِي ذَلِكَ لَآَيَاتٍ لِقَوْمٍ يَتَفَكَرُونَ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    child: Image.asset(
+                      'assets/images/3demail_icon.png',
+                      width: 100,
+                      height: 100,
                     ),
-
-                  ]),
+                  ),
                   CustomTextField(
                     controller: emailController,
                     hintText: 'البريد الإلكتروني',
                     keyboardType: TextInputType.emailAddress,
+                    preIconPadding: 11,
                     prefixIcon: Image.asset(
-                      'assets/images/profile_icon.png',
+                      'assets/images/email_icon.png',
                       width: 1,
                       height: 1,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(
-                    height: 12,
+                    height: 8,
                   ),
                   CustomTextField(
                     controller: passwordController,
                     hintText: 'كلمة السر',
-                    obscureText: true,
+                    obscureText: _obscureText,
                     keyboardType: TextInputType.visiblePassword,
                     prefixIcon: Image.asset(
                       'assets/images/shield_icon.png',
@@ -87,17 +93,23 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     suffixIcon: IconButton(
                       icon: Image.asset(
-                        'assets/images/visibility_off.png',
+                        _obscureText
+                            ? 'assets/images/visibility_off.png' // Eye icon for hidden password
+                            : 'assets/images/visibility_on.png',
+                        // Eye icon for visible password
                         // Eye icon for visibility toggle
                         width: 24,
                         height: 24,
                       ),
                       onPressed: () {
                         // Toggle visibility logic here
+                        setState(() {
+                          _obscureText = !_obscureText; // Toggle the visibility
+                        });
                       },
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
                       switch (state) {
@@ -122,30 +134,64 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
-                  Row(
+                  const SizedBox(height: 32),
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("أليس لديك حساب ؟"),
+                      Text(
+                        "أليس لديك حساب ؟",
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          // Remove padding
+                          minimumSize: Size.zero,
+                          // Remove the minimum size (if any)
+                          tapTargetSize: MaterialTapTargetSize
+                              .shrinkWrap, // Shrink the tap target size
+                        ),
                         onPressed: () {
                           // Navigate to the reset password page
                           Navigator.pushReplacementNamed(context, '/signup');
                         },
-                        child: Text("قم بإنشاء حساب جديد"),
+                        child: Text(
+                          "قم بإنشاء حساب جديد",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Row(
+                  const SizedBox(height: 16),
+                  Column(
                     children: [
-                      const Text("هل نسيت كلمة السر ؟"),
+                      Text(
+                        "هل نسيت كلمة السر ؟",
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          // Remove padding
+                          minimumSize: Size.zero,
+                          // Remove the minimum size (if any)
+                          tapTargetSize: MaterialTapTargetSize
+                              .shrinkWrap, // Shrink the tap target size
+                        ),
                         onPressed: () {
                           // Navigate to the reset password page
                           Navigator.pushNamed(context, '/resetPassword');
                         },
-                        child: const Text("إعادة تعيين كلمة السر"),
+                        child: Text(
+                          "إعادة تعيين كلمة السر",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),

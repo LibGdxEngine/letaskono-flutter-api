@@ -29,6 +29,13 @@ class IslamicDatingApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          appBarTheme:  const AppBarTheme(
+            elevation: 0,
+            surfaceTintColor: colorF5EFE6,
+            iconTheme: IconThemeData(
+              color: color7895B2, // Change the color here
+            ),
+          ),
           fontFamily: 'NotoKufiArabic',
           colorScheme: const ColorScheme(
             primary: color7895B2,
@@ -51,10 +58,6 @@ class IslamicDatingApp extends StatelessWidget {
             brightness: Brightness.light, // Use light mode
           ),
           scaffoldBackgroundColor: colorF5EFE6,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: color7895B2,
-            foregroundColor: Colors.white,
-          ),
           textTheme: const TextTheme(
             headlineSmall: TextStyle(
                 fontSize: 24, // Adjusted for better balance
@@ -71,7 +74,7 @@ class IslamicDatingApp extends StatelessWidget {
                 fontFamily: 'NotoKufiArabic'),
             bodySmall: TextStyle(
                 fontSize: 14, // Increased for better readability
-                color: colorAEBDCA,
+                color: color7895B2,
                 fontFamily: 'NotoKufiArabic'),
             bodyMedium: TextStyle(
                 fontSize: 16, // Ideal for regular body text

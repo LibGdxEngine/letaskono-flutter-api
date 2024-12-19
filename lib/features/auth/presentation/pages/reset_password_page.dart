@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:letaskono_flutter/core/utils/CustomButton.dart';
+import 'package:letaskono_flutter/core/utils/CustomTextField.dart';
 
 import '../bloc/auth_bloc.dart';
 
@@ -89,7 +91,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Reset Password"),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: Text(
+          "استعادة كلمة السر",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -112,23 +118,51 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               if (!_isEmailSubmitted)
                 Column(
                   children: [
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(),
+                    Container(
+                      width: 70, // Adjust width as needed
+                      height: 70, // Adjust height as needed
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius: BorderRadius.circular(
+                            10), // Adjust radius as needed
                       ),
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/lock_icon.png',
+                          width: 45,
+                          height: 45,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    CustomTextField(
+                      controller: _emailController,
+                      hintText: 'البريد الإلكتروني',
                       keyboardType: TextInputType.emailAddress,
+                      preIconPadding: 11,
+                      prefixIcon: Image.asset(
+                        'assets/images/email_icon.png',
+                        width: 1,
+                        height: 1,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _isButtonDisabled ? null : _sendOrResendEmail,
-                      child: Text(_isButtonDisabled
-                          ? "Resend in $_counter seconds"
+                    SizedBox(height: 16),
+                    CustomButton(
+                      text: _isButtonDisabled
+                          ? "إرسال مجددا بعد $_counter ثانية"
                           : _isFirstTime
-                              ? "Send Email"
-                              : "Resend"),
+                              ? "إرسال رمز الاستعادة"
+                              : "إعادة الإرسال",
+                      icon: 'assets/images/signin_icon.png',
+                      iconBackgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      onPressed: _isButtonDisabled ? null : _sendOrResendEmail,
+                      textColor: Colors.white,
                     ),
+
                   ],
                 )
               else

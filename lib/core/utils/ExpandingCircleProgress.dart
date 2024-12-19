@@ -43,7 +43,7 @@ class _ExpandingCircleProgressState extends State<ExpandingCircleProgress>
           return CustomPaint(
             size: const Size(50, 50), // Size of the canvas
             painter: SolidCirclePainter(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.secondary,
               expansion: _circleExpansion.value,
               radii: _radii,
             ),

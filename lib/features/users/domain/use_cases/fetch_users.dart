@@ -10,6 +10,7 @@ class FetchUsers {
 
   Future<List<UserEntity>> call(
       {required int page, SearchEntity? query}) async {
+
     return await repository.fetchUsers(page: page, query: query);
   }
 }

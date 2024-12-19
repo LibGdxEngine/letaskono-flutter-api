@@ -42,7 +42,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
 
     try {
       final response = await httpClient.get(
-        'api/v1/users/account/?page=$page${query != null ? "&${query.toString()}" : ""}',
+        'api/v1/users/account/?page=$page${query != null ? "${query.toString()}" : ""}',
         headers: {
           "Authorization": "Token ${token}",
           "Content-Type": "application/json",
@@ -51,7 +51,9 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       // Decode the JSON response
       List<dynamic> responseList =
           response.data['results']; // Dio directly gives JSON-decoded response
+
       var users = responseList.map((data) => User.fromJson(data)).toList();
+
 
       // Map the response to User objects
       return users;

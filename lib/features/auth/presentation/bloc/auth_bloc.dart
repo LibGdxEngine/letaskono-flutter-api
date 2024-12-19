@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart';
@@ -41,6 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
               AuthConfirmationCodeSent()); // go to confirmation code sent state
         }
+      } on Exception catch (error) {
+        emit(AuthFailure(error.toString()));
       }
     });
 

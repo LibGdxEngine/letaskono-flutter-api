@@ -111,7 +111,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<String> signIn(String email, String password) async {
-    print('Hello');
     try {
       final response = await httpClient.post(
         'api/v1/users/login/',

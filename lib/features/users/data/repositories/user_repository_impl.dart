@@ -16,6 +16,7 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<List<UserEntity>> fetchUsers(
       {int page = 1, SearchEntity? query}) async {
+
     // Fetch users from the remote data source
     final List<User> users =
         await remoteDataSource.fetchUsers(page: page, query: query);
@@ -75,7 +76,6 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   UserDetailsEntity _mapUserDetailToEntity(UserDetails user) {
-
     return UserDetailsEntity(
       id: user.id,
       pkid: user.pkid,
@@ -127,13 +127,16 @@ class UserRepositoryImpl extends UserRepository {
       weight: user.weight,
       height: user.height,
       id: user.id,
-      name: user.code,
       maritalStatus: user.maritalStatus,
       lastSeen: user.lastSeen,
       profession: user.profession,
       educationLevel: user.educationLevel,
       age: user.age,
       gender: user.gender,
+      state: user.state,
+      nationality: user.nationality,
+      hijab: user.hijab,
+      le7ya: user.le7ya,
     );
   }
 }

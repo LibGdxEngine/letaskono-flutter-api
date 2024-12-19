@@ -29,8 +29,22 @@ class UsersPage extends StatelessWidget {
           isFavourite: false,
         ),
         floatingActionButton: FloatingActionButton(
+          elevation: 1, // Adds slight elevation for a floating effect
+          focusColor: Colors.white,
+          mini: true,
+          hoverColor: const Color(0x50DD88CF),
+          backgroundColor: const Color(0xFFDD88CF),
           onPressed: () => _showFilterModal(context),
-          child: const Icon(Icons.filter_alt),
+          child: Transform.rotate(
+            angle: 90 * (3.14159265359 / 180), // Convert 90 degrees to radians
+            child: Image.asset(
+              "assets/images/icon_configurations.png",
+              width: 35, // Adjust size to fit nicely in the circle
+              height: 40,
+              color: Colors.white,
+              fit: BoxFit.contain, // Ensures the image fits well inside the button
+            ),
+          ),
         ),
       ),
     );

@@ -1,0 +1,27 @@
+name: dropdown_search
+description: Simple, reactive and highly customizable Flutter Dropdown with a lot of features (search, popups platform, async/sync,...) with multi mode like menu, dialog, bottomSheet and etc.
+version: 7.0.0-pre2
+homepage: https://github.com/salim-lachdhaf
+git: https://github.com/salim-lachdhaf/dropdown_search
+repository: https://github.com/salim-lachdhaf/dropdown_search
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+
+
+dependencies:
+  cupertino_icons: ^1.0.8
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^5.0.0
+
+topics:
+  - dropdown
+  - autocomplete
+  - form
+  - material
+  - popups
