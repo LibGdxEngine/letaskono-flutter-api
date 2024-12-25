@@ -35,7 +35,6 @@ class ChatRoom {
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
-    print(json['male_summary']);
     return ChatRoom(
       id: json['id'] as int,
       name: json['name'] as String,

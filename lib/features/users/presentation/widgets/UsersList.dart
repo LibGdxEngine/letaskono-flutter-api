@@ -28,7 +28,7 @@ class _UsersListState extends State<UsersList> {
   @override
   void initState() {
     super.initState();
-    widget.userBloc.add(SetOnlineEvent());
+    // widget.userBloc.add(SetOnlineEvent());
     _scrollController.addListener(_onScroll);
   }
 
@@ -187,7 +187,7 @@ class _UsersListState extends State<UsersList> {
   @override
   void dispose() {
     _scrollController.dispose();
-    widget.userBloc.add(SetOfflineEvent());
+    // widget.userBloc.add(SetOfflineEvent());
     super.dispose();
   }
 }

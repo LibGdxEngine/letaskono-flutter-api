@@ -117,7 +117,6 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
       });
       return response.data;
     } on DioException catch (e) {
-      print((e.response?.data['error'].toString())!);
       throw Customexception((e.response?.data['error'].toString())!);
     }
   }
@@ -133,7 +132,6 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
-      print(response.data['results'][0]);
       return ChatRoom.fromJson(response.data['results'][0]);
     } on DioException catch (e) {
       throw Exception(e);

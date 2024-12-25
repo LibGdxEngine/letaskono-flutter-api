@@ -124,12 +124,10 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       ChatStateUpdated event, Emitter<WebSocketState> emit) async {
     try {
       final response = await updateChatStateUseCase(event.state, event.roomId);
-      print(response);
-      print('actor');
+
       emit(ChatRoomStateUpdated(response['room_id'].toString()!,
           response['male_state']!, response['female_state']!));
     }catch(error){
-      print('asd');
       emit(ChatRoomsError(error.toString()));
     }
   }

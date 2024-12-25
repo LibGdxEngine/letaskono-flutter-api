@@ -15,7 +15,6 @@ class ChatRoom {
 
   /// Factory constructor to create a ChatRoom from JSON
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
-    print(json);
     return ChatRoom(
       id: json['id'],
       currentUserMessageCount: json['current_user_message_count'] as int,

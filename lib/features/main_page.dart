@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:letaskono_flutter/features/chat/presentation/pages/chat_list_main.dart';
 import 'package:letaskono_flutter/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:letaskono_flutter/features/requests/presentation/pages/requests_page.dart';
+import 'package:letaskono_flutter/features/users/presentation/bloc/user_bloc.dart';
 import 'package:letaskono_flutter/features/users/presentation/pages/favourites_page.dart';
 import 'package:letaskono_flutter/features/users/presentation/pages/home_page.dart';
 
@@ -13,7 +14,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  late UserBloc _userBloc;
   int _selectedIndex = 0; // State to manage selected index
 
   // List of screens for navigation
@@ -25,6 +27,32 @@ class _HomePageState extends State<HomePage> {
     // const NotificationsPage(),
     // Center(child: Text('المقالات')),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _userBloc = UserBloc(); // Initialize your BLoC
+    _userBloc.add(SetOnlineEvent());
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _userBloc.close();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive || // When app goes to background
+        state == AppLifecycleState.paused) {
+      _userBloc.add(SetOfflineEvent());
+    }else if(state == AppLifecycleState.resumed){
+      _userBloc.add(SetOnlineEvent());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
