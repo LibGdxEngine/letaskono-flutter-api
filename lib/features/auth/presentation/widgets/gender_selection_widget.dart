@@ -37,9 +37,9 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildGenderOption('Male', Icons.male, 'male'),
+        _buildGenderOption('رجل', Icons.man_2_outlined, 'male'),
         const SizedBox(width: 20), // Add spacing between the options
-        _buildGenderOption('Female', Icons.female, 'female'),
+        _buildGenderOption('فتاة', Icons.woman_2_outlined, 'female'),
       ],
     );
   }
@@ -61,7 +61,7 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected ? Colors.blue : Colors.grey[300],
+              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[300],
             ),
             child: Icon(
               icon,

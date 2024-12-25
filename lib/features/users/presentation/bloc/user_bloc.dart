@@ -8,6 +8,8 @@ import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEntity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/set_offline.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/set_online.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/use_cases/fetch_favourites.dart';
@@ -24,6 +26,8 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
   final FetchFavourites fetchFavouritesUseCase = sl<FetchFavourites>();
   final FetchUserDetails fetchUserDetailsUseCase = sl<FetchUserDetails>();
   final SendRequest sendRequestUseCase = sl<SendRequest>();
+  final SetOnline setOnlineUseCase = sl<SetOnline>();
+  final SetOffline setOfflineUseCase = sl<SetOffline>();
   final prefs = sl<SharedPreferences>();
 
   UserBloc() : super(UsersInitial()) {
@@ -169,6 +173,14 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
       } catch (error) {
         emit(UsersError(error.toString()));
       }
+    });
+
+    on<SetOnlineEvent>((event, emit) async {
+      setOnlineUseCase();
+    });
+
+    on<SetOfflineEvent>((event, emit) async {
+      setOfflineUseCase();
     });
   }
 

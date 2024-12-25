@@ -24,6 +24,7 @@ class NotificationRepositoryImpl extends NotificationRepository {
       isRead: notification.isRead,
       message: notification.message,
       title: notification.title,
+      messageAction: notification.messageAction,
     );
   }
 }

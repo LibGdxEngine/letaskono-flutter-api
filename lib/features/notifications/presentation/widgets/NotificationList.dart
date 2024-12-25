@@ -37,6 +37,7 @@ class _NotificationsListState extends State<NotificationsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('التنبيهات'),),
       body: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (context, state) {
           if (state is NotificationLoading &&
@@ -56,7 +57,7 @@ class _NotificationsListState extends State<NotificationsList> {
                     page: (state as NotificationLoaded).currentPage,
                     isRefreshing: true));
               },
-              child: ListView.builder(
+              child:notifications.isNotEmpty ? ListView.builder(
                 controller: _scrollController,
                 itemCount: notifications.length +
                     (state is NotificationLoadingMore ? 1 : 0),
@@ -66,7 +67,7 @@ class _NotificationsListState extends State<NotificationsList> {
                   }
                   return NotificationCard(notification: notifications[index]);
                 },
-              ),
+              ) : const Center(child: Text('ليس هناك تنبيهات حاليا'),),
             );
           } else {
             return const Center(child: Text('No notifications available.'));

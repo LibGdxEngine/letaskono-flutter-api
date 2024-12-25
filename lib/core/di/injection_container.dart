@@ -10,8 +10,11 @@ import 'package:letaskono_flutter/features/chat/data/repository/chat_repository_
 import 'package:letaskono_flutter/features/chat/domain/repository/chat_repository.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/connect_to_chat.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/disconnect_from_chat.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/fetch_chat_rooms.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/fetch_khetba_room_details.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/load_messages.dart';
 import 'package:letaskono_flutter/features/chat/domain/use_cases/send_message.dart';
+import 'package:letaskono_flutter/features/chat/domain/use_cases/update_chat_state.dart';
 import 'package:letaskono_flutter/features/notifications/data/data_sources/notifications_remote_data_source.dart';
 import 'package:letaskono_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:letaskono_flutter/features/notifications/domain/repositories/notification_repository.dart';
@@ -34,6 +37,8 @@ import 'package:letaskono_flutter/features/users/domain/use_cases/reject_request
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_favourites.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/send_request.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/set_offline.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/set_online.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/domain/use_cases/password_verify.dart';
 import '../../features/auth/domain/use_cases/sign_in.dart';
@@ -130,6 +135,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ConnectToChat(sl()));
   sl.registerLazySingleton(() => SendMessage(sl()));
   sl.registerLazySingleton(() => DisconnectFromChat(sl()));
+  sl.registerLazySingleton(() => FetchChatRooms(sl()));
+  sl.registerLazySingleton(() => UpdateChatState(sl()));
+  sl.registerLazySingleton(() => FetchKhetbaRoomDetails(sl()));
+  sl.registerLazySingleton(() => SetOnline(sl()));
+  sl.registerLazySingleton(() => SetOffline(sl()));
 
   // Register Bloc
   sl.registerFactory(() => AuthBloc());

@@ -5,9 +5,14 @@ import '../bloc/user_bloc.dart';
 import '../widgets/FilterBottomSheet.dart';
 import '../widgets/UsersList.dart';
 
-class UsersPage extends StatelessWidget {
+class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
+  @override
+  State<UsersPage> createState() => _UsersPageState();
+}
+
+class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     final userBloc = UserBloc()..add(FetchUsersEvent());
@@ -24,12 +29,16 @@ class UsersPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => userBloc,
       child: Scaffold(
-        body: const UsersList(
-          key: ValueKey(false),
-          isFavourite: false,
+        body: SafeArea(
+          child: UsersList(
+            userBloc: userBloc,
+            key: const ValueKey(false),
+            isFavourite: false,
+          ),
         ),
         floatingActionButton: FloatingActionButton(
-          elevation: 1, // Adds slight elevation for a floating effect
+          elevation: 1,
+          // Adds slight elevation for a floating effect
           focusColor: Colors.white,
           mini: true,
           hoverColor: const Color(0x50DD88CF),
@@ -42,11 +51,18 @@ class UsersPage extends StatelessWidget {
               width: 35, // Adjust size to fit nicely in the circle
               height: 40,
               color: Colors.white,
-              fit: BoxFit.contain, // Ensures the image fits well inside the button
+              fit: BoxFit
+                  .contain, // Ensures the image fits well inside the button
             ),
           ),
         ),
       ),
     );
   }
+
+// @override
+// void dispose() {
+//   context.read<UserBloc>().add(SetOfflineEvent());
+//   super.dispose();
+// }
 }

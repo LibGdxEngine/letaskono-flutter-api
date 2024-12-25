@@ -5,12 +5,15 @@ class MessageBubble extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final bool isBold;
+  final bool? isSender;
 
   const MessageBubble({
+    super.key,
     required this.text,
     required this.backgroundColor,
     required this.textColor,
     this.isBold = false,
+    this.isSender,
   });
 
   @override
@@ -20,7 +23,20 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.only(
+          bottomRight: isSender == null
+              ? const Radius.circular(16)
+              : isSender == true
+                  ? const Radius.circular(0)
+                  : const Radius.circular(16),
+          bottomLeft: isSender == null
+              ? const Radius.circular(16)
+              : isSender == true
+                  ? const Radius.circular(16)
+                  : const Radius.circular(0),
+          topRight: const Radius.circular(16),
+          topLeft: const Radius.circular(16),
+        ),
       ),
       child: Text(
         text,

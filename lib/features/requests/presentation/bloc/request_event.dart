@@ -11,6 +11,9 @@ class FetchRequestsEvent extends RequestEvent {
   final bool isRefreshing;
 
   FetchRequestsEvent({this.page = 1, this.isRefreshing = false});
+
+  @override
+  List<Object?> get props => [page, isRefreshing];
 }
 
 class FetchFavouritesEvent extends RequestEvent {}

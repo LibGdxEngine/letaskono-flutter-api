@@ -22,4 +22,8 @@ abstract class UserRepository {
   Future<String> acceptRequest(int requestId);
 
   Future<String> rejectRequest(int requestId);
+
+  Future<String> setOnline();
+
+  Future<String> setOffline();
 }

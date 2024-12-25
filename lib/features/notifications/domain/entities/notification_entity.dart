@@ -2,6 +2,7 @@ class NotificationEntity {
   final int id;
   final String title;
   final String message;
+  final String? messageAction;
   final DateTime createdAt;
   final bool isRead;
 
@@ -9,6 +10,7 @@ class NotificationEntity {
     required this.id,
     required this.title,
     required this.message,
+     this.messageAction,
     required this.createdAt,
     required this.isRead,
   });
@@ -21,6 +23,7 @@ class NotificationEntity {
       message: json['message'],
       createdAt: DateTime.parse(json['created_at']),
       isRead: json['is_read'],
+      messageAction: json['message_action']
     );
   }
 
@@ -32,6 +35,7 @@ class NotificationEntity {
       'message': message,
       'created_at': createdAt.toIso8601String(),
       'is_read': isRead,
+      'message_action': messageAction,
     };
   }
 }

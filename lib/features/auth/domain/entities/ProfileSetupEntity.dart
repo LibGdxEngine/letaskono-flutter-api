@@ -6,6 +6,7 @@ class ProfileCompletion extends Equatable {
   final int? weight;
   final String? skinColor;
   final String? country;
+  final String? nationality;
   final String? state;
   final String? gender;
   final String? city;
@@ -43,6 +44,7 @@ class ProfileCompletion extends Equatable {
     this.weight,
     this.skinColor,
     this.country,
+    this.nationality,
     this.gender,
     this.state,
     this.city,
@@ -132,6 +134,7 @@ class ProfileCompletion extends Equatable {
       'education_level': educationLevel,
       'profession': profession,
       'about_me': aboutMe,
+      'nationality': nationality,
       'phone_number': phoneNumber,
       'looking_for': lookingFor,
       'memorized_quran_parts': memorizedQuranParts,

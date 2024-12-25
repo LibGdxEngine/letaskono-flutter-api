@@ -8,6 +8,8 @@ class UserDetailsEntity {
   final String? gender;
   final int? age;
   final String? country;
+  final String? le7ya;
+  final String? nationality;
   final String? state;
   final String? city;
   final String? phoneNumber;
@@ -66,6 +68,8 @@ class UserDetailsEntity {
     this.fcmToken,
     this.gender,
     this.age,
+    this.le7ya,
+    this.nationality,
     this.country,
     this.state,
     this.city,
@@ -131,6 +135,8 @@ class UserDetailsEntity {
         country: json['country'],
         state: json['state'],
         city: json['city'],
+        le7ya: json['le7ya'],
+        nationality: json['nationality'],
         phoneNumber: json['phone_number'],
         fathersPhone: json['fathers_phone'],
         educationLevel: json['education_level'],
@@ -194,6 +200,8 @@ class UserDetailsEntity {
       'country': country,
       'state': state,
       'city': city,
+      'le7ya': le7ya,
+      'nationality': nationality,
       'phone_number': phoneNumber,
       'fathers_phone': fathersPhone,
       'education_level': educationLevel,

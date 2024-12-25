@@ -10,10 +10,15 @@ class FavouritesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userBloc = UserBloc();
     return BlocProvider(
-      create: (context) => UserBloc()..add(FetchFavouritesEvent()),
-      child: const Scaffold(
-        body: UsersList(isFavourite: true),
+      create: (context) => userBloc..add(FetchFavouritesEvent()),
+      child: Scaffold(
+        body: SafeArea(
+            child: UsersList(
+          isFavourite: true,
+          userBloc: userBloc,
+        )),
       ),
     );
   }
@@ -56,8 +61,8 @@ class NewWidget extends StatelessWidget {
                     },
                   )
                 : const Center(
-                  child: Text("ليس هناك محفوظات"),
-                ),
+                    child: Text("ليس هناك محفوظات"),
+                  ),
           );
         } else if (state is UsersError) {
           return Center(child: Text('Error: ${state.error}'));

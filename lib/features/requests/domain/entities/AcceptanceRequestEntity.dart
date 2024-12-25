@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:letaskono_flutter/features/requests/data/models/request_type.dart';
 
-class AcceptanceRequestEntity {
+class AcceptanceRequestEntity extends Equatable {
   final int id;
   final String sender;
   final String receiver;
@@ -28,4 +29,7 @@ class AcceptanceRequestEntity {
       requestType: type,
     );
   }
+
+  @override
+  List<Object?> get props => [id];
 }

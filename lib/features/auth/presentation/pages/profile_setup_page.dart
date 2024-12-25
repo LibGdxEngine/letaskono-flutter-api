@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:letaskono_flutter/core/utils/CustomTextField.dart';
+import 'package:letaskono_flutter/core/utils/SingleSelectionDropdown.dart';
 import 'package:letaskono_flutter/core/utils/constants.dart';
 import 'package:letaskono_flutter/features/auth/domain/entities/AuthEntity.dart';
 import 'package:letaskono_flutter/features/auth/domain/entities/ProfileSetupEntity.dart';
@@ -27,6 +29,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   String? _genderError; // To display error message
   String? _selectedSkinColor;
   String? _selectedCountry;
+  String? _selectedNationality;
   int? _selectedQuranParts;
   String? _selectedFatherKnowAboutApp;
   String? _selectedFatherAcceptMarriageWithoutQaima;
@@ -38,8 +41,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
   bool hasChildren = false;
 
-  bool isFatherAlive = true;
-  bool isMotherAlive = true;
+  bool? isFatherAlive;
+  bool? isMotherAlive;
 
   String? _selectedPrayFrequency;
   String? _selectedAzkarPractice;
@@ -96,6 +99,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         break;
       case 1:
         _prefs.setString('profile_setup_country', _selectedCountry ?? '');
+        _prefs.setString(
+            'profile_setup_nationality', _selectedNationality ?? '');
         _prefs.setString('profile_setup_state', _selectedState ?? '');
         _prefs.setString('profile_setup_city', cityController.text);
         _prefs.setString('profile_setup_phone', phoneController.text);
@@ -121,8 +126,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             'profile_setup_education', _selectedEducationLevel ?? '');
         break;
       case 3:
-        _prefs.setBool('profile_setup_fatherAlive', isFatherAlive);
-        _prefs.setBool('profile_setup_motherAlive', isMotherAlive);
+        _prefs.setBool('profile_setup_fatherAlive', isFatherAlive!);
+        _prefs.setBool('profile_setup_motherAlive', isMotherAlive!);
         _prefs.setString('profile_setup_fatherJob', fatherJobController.text);
         _prefs.setString('profile_setup_motherJob', motherJobController.text);
         _prefs.setString(
@@ -164,6 +169,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       _selectedCountry =
           (_prefs.getString('profile_setup_country')?.isNotEmpty ?? false)
               ? _prefs.getString('profile_setup_country')
+              : null;
+      _selectedNationality =
+          (_prefs.getString('profile_setup_nationality')?.isNotEmpty ?? false)
+              ? _prefs.getString('profile_setup_nationality')
               : null;
       _selectedFatherKnowAboutApp =
           (_prefs.getString('profile_setup_fatherKnowAboutApp')?.isNotEmpty ??
@@ -268,7 +277,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         if (_selectedGender?.isEmpty ?? true) {
           setState(() {
             _genderError =
-                "Please select a gender"; // Set error message if no gender selected
+                "اختر ما إذا كنت رجلا أم امرأة"; // Set error message if no gender selected
           });
         } else {
           setState(() {
@@ -313,7 +322,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   // In the final step, clear data on successful submission
   void _onSubmit() async {
     // Submit the form (do your submission logic)
-    await _clearFormData(); // Clear saved data after submission
     // TODO: send request to fill user data
     BlocProvider.of<AuthBloc>(context).add(SubmitProfileEvent(ProfileCompletion(
       gender: _selectedGender == "male" ? 'M' : 'F',
@@ -323,6 +331,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       children: hasChildren,
       city: cityController.text,
       country: _selectedCountry,
+      nationality: _selectedNationality,
       educationLevel: _selectedEducationLevel,
       fatherAlive: isFatherAlive,
       motherAlive: isMotherAlive,
@@ -355,7 +364,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile Setup')),
+      appBar: AppBar(title: const Text('استكمال بيانات الحساب')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           switch (state) {
@@ -367,61 +376,68 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               }
             case AuthProfileSubmitted():
               {
+                _clearFormData(); // Clear saved data after submission
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Profile setup completed")),
+                  const SnackBar(content: Text("تم استكمال بيانات الحساب")),
                 );
               }
           }
         },
-        child: Column(
-          children: [
-            // Horizontal step indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) {
-                return CircleAvatar(
-                  radius: 20,
-                  backgroundColor:
-                      _currentStep == index ? Colors.blue : Colors.grey,
-                  child: Text('${index + 1}'),
-                );
-              }),
-            ),
-            Expanded(
-              child: PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: _controller,
-                onPageChanged: (page) {
-                  setState(() {
-                    _currentStep = page;
-                  });
-                },
-                children: [
-                  buildBasicInfoStep(context),
-                  buildLocationStep(context),
-                  buildPersonalInfoStep(context),
-                  buildFamilyInfoStep(context),
-                  buildReligiousInfoStep(context),
-                  buildDocumentUploadStep(context),
-                ],
+        child: Container(
+          color: Theme.of(context).colorScheme.surface,
+          child: Column(
+            children: [
+              // Horizontal step indicator
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(6, (index) {
+                  return CircleAvatar(
+                    radius: 20,
+                    backgroundColor: _currentStep == index
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey,
+                    child: Text('${index + 1}'),
+                  );
+                }),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (_currentStep > 0)
+              Expanded(
+                child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: _controller,
+                  onPageChanged: (page) {
+                    setState(() {
+                      _currentStep = page;
+                    });
+                  },
+                  children: [
+                    buildBasicInfoStep(context),
+                    buildLocationStep(context),
+                    buildPersonalInfoStep(context),
+                    buildFamilyInfoStep(context),
+                    buildReligiousInfoStep(context),
+                    buildDocumentUploadStep(context),
+                  ],
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_currentStep > 0)
+                      ElevatedButton(
+                          onPressed: previousPage, child: const Text('عودة')),
+                    if (_currentStep == 0) const Spacer(),
                     ElevatedButton(
-                        onPressed: previousPage, child: const Text('Previous')),
-                  ElevatedButton(
-                    onPressed: _currentStep == 5 ? _onSubmit : nextPage,
-                    child: Text(_currentStep == 5 ? 'Finish' : 'Next'),
-                  ),
-                ],
+                      onPressed: _currentStep == 5 ? _onSubmit : nextPage,
+                      child: Text(_currentStep == 5 ? 'استكمال' : 'التالي'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -457,94 +473,103 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                 ),
                 Text(_genderError ?? '',
                     style: const TextStyle(color: Colors.red)),
-                TextFormField(
+                CustomTextField(
                   controller: ageController,
+                  hintText: 'العمر',
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Age'),
+                  preIconPadding: 11,
+                  prefixIcon: const Icon(Icons.numbers_outlined),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your age';
+                      return 'من فضلك أدخل عمرك';
                     }
                     if (int.tryParse(value) == null) {
-                      return 'Please enter a valid number';
+                      return 'يرجى اختيار رقم صحيح';
                     }
                     if (int.parse(value) <= 0) {
-                      return 'Age must be greater than 0';
+                      return 'يجب أن يكون عمرك أكبر من ذلك';
                     }
                     if (int.parse(value) >= 100) {
-                      return 'Age must be less than 100';
+                      return 'أنت كبير للغاية للتسجيل لدينا';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
+                const SizedBox(height: 16),
+                CustomTextField(
                   controller: heightController,
+                  hintText: 'الطول',
                   keyboardType: const TextInputType.numberWithOptions(
                       signed: false, decimal: false),
-                  decoration: const InputDecoration(labelText: 'Height'),
+                  preIconPadding: 11,
+                  prefixIcon: Image.asset(
+                    "assets/images/height_icon.png",
+                    width: 15,
+                    height: 15,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your height';
+                      return 'من فضلك أدخل طولك';
                     }
                     if (double.tryParse(value) == null) {
-                      return 'Please enter a valid number';
+                      return 'يرجى اختيار رقم صحيح';
                     }
                     if (double.tryParse(value)! >= 220.0) {
-                      return 'Please enter a valid number';
+                      return 'يجب أن يكون طولك اقل من ذلك';
                     }
                     if (double.tryParse(value)! <= 40) {
-                      return 'Please enter a valid number';
+                      return 'يجب أن يكون طولك أكثر من ذلك';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
+                const SizedBox(height: 16),
+                CustomTextField(
                   controller: weightController,
+                  hintText: 'الوزن',
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Weight'),
+                  preIconPadding: 11,
+                  prefixIcon: Image.asset(
+                    "assets/images/weight_icon.png",
+                    width: 15,
+                    height: 15,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your weight';
+                      return 'من فضلك أدخل وزنك';
                     }
                     if (double.tryParse(value) == null) {
-                      return 'Please enter a valid number';
+                      return 'يرجى اختيار رقم صحيح';
                     }
                     if (double.tryParse(value)! >= 250) {
-                      return 'Please enter a valid number';
+                      return 'يجب أن يكون وزك أقل من ذلك';
                     }
                     if (double.tryParse(value)! <= 25) {
-                      return 'Please enter a valid number';
+                      return 'يجب أن يكون وزنك أكبر من ذلك';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Skin Color',
-                    border: OutlineInputBorder(),
-                  ),
-                  value: _selectedSkinColor,
-                  items: _skinColors.map((color) {
-                    return DropdownMenuItem<String>(
-                      value: color,
-                      child: Text(color),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
+                const SizedBox(height: 16),
+                SingleSelectionDropdown(
+                  title: 'لون البشرة',
+                  items: _skinColors,
+                  selectedItem: _selectedSkinColor,
+                  // Optional: set an initial selected item
+                  onSelected: (String? item) {
                     setState(() {
-                      _selectedSkinColor = value;
+                      _selectedSkinColor = item;
                     });
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please select a skin color';
+                      return 'من فضلك اختر لون بشرتك';
                     }
                     return null;
                   },
+                  hintText: 'اختر لون البشرة',
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -556,20 +581,19 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   // Step 2: Location Information
   Widget buildLocationStep(BuildContext context) {
     // Predefined lists of cities and countries
-
     final Map<String, String> fatherKnowsOptions = {
-      'yes': 'Yes, knows',
-      'no': 'No',
-      'no_but_tell': 'No, but I can tell him later',
+      'نعم': 'Yes, knows',
+      "لا يعلم ولكن يمكنني إخباره": 'No',
+      "لا يعلم وأحتاج مساعدة لإخباره": 'No, but I can tell him later',
     };
     final Map<String, String> fatherAcceptMarriageWithoutQaima = {
-      'yes': 'Yes',
-      'no': 'No',
-      'maybe': 'Maybe',
+      'نعم': 'Yes',
+      'لا': 'No',
+      'ربما': 'Maybe',
     };
     final Map<String, String> youAcceptMarriageWithoutQaima = {
-      'yes': 'Yes',
-      'no': 'No',
+      'نعم': 'Yes',
+      'لا': 'No',
     };
 
     // Update phone code when country is selected
@@ -585,10 +609,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     // Validate phone number (basic validation)
     String? _validatePhoneNumber(String? value) {
       if (value == null || value.isEmpty) {
-        return 'Please enter your phone number';
+        return 'من فضلك أدخل رقم هاتفك';
       }
       if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-        return 'Enter a valid phone number';
+        return 'رقم الهاتف غير صالح!';
       }
       return null;
     }
@@ -601,177 +625,181 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Country Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedCountry,
-                decoration: const InputDecoration(labelText: 'Country'),
-                items: Constants.countryStateMap.keys.map((country) {
-                  return DropdownMenuItem(
-                    value: country,
-                    child: Text(country),
-                  );
-                }).toList(),
-                onChanged: _onCountryChanged,
+              SingleSelectionDropdown(
+                title: 'بلد الإقامة',
+                items: Constants.countryStateMap.keys.toList(),
+                selectedItem: _selectedCountry,
+                onSelected: _onCountryChanged,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a country';
+                    return 'من فضلك اختر بلد الإقامة';
                   }
                   return null;
                 },
+                hintText: 'اختر بلد الإقامة',
               ),
               const SizedBox(height: 16),
-
-              // City Dropdown (depends on selected country)
-              if (_selectedCountry != null)
-                DropdownButtonFormField<String>(
-                  value: _selectedState,
-                  decoration: const InputDecoration(labelText: 'State'),
-                  items:
-                      Constants.countryStateMap[_selectedCountry]!.map((state) {
-                    return DropdownMenuItem(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
+              if (_selectedCountry != null) ...[
+                SingleSelectionDropdown(
+                  title: 'المحافظة',
+                  items: Constants.countryStateMap[_selectedCountry]!.toList(),
+                  selectedItem: _selectedState,
+                  onSelected: (state) {
                     setState(() {
                       _selectedState = state;
                     });
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please select a state';
+                      return 'من فضلك اختر محافظتك';
                     }
                     return null;
                   },
+                  isEnabled: _selectedCountry != null,
+                  hintText: 'اختر محافظتك',
                 ),
+                const SizedBox(height: 16),
+              ],
+              SingleSelectionDropdown(
+                title: 'الجنسية',
+                items: Constants.countryStateMap.keys.toList(),
+                selectedItem: _selectedNationality,
+                onSelected: (item) => {
+                  setState(() {
+                    _selectedNationality = item;
+                  })
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'من فضلك اختر جنسيتك';
+                  }
+                  return null;
+                },
+                hintText: 'اختر جنسيتك',
+              ),
               const SizedBox(height: 16),
-
-              // Phone number field with country phone code
-              TextFormField(
+              CustomTextField(
                 controller: cityController,
+                hintText: 'القرية/المدينة',
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  labelText: 'City',
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.location_on_outlined,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your city';
+                    return 'من فضلك أدخل المدينة التي تعيش فيها';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-
-              // Phone number field with country phone code
-              TextFormField(
+              CustomTextField(
                 controller: phoneController,
+                hintText: 'رقم الهاتف',
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixText:
-                      _selectedPhoneCode, // Display phone code as a prefix
+                preIconPadding: 11,
+                prefexText: _selectedPhoneCode,
+                prefixIcon: Icon(
+                  Icons.phone_outlined,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 validator: _validatePhoneNumber,
               ),
               const SizedBox(height: 16),
-
               _selectedGender == 'female'
                   ? Column(
                       children: [
-                        TextFormField(
+                        CustomTextField(
                           controller: fatherPhoneNumberController,
+                          hintText: 'رقم هاتف ولي أمرك',
                           keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Fathers phone number',
+                          preIconPadding: 11,
+                          prefexText: _selectedPhoneCode,
+                          prefixIcon: Icon(
+                            Icons.phone_outlined,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter the father phone number';
+                              return 'من فضلك أدخلي رقم الهاتف';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedFatherKnowAboutApp,
-                          // Initially selected value
-                          decoration: const InputDecoration(
-                            labelText: 'Does your father know about this app?',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: fatherKnowsOptions.entries
-                              .map((entry) => DropdownMenuItem<String>(
-                                    value: entry.key,
-                                    child: Text(entry.value),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            _selectedFatherKnowAboutApp = value;
+                        SingleSelectionDropdown(
+                          title:
+                              'هل يعلم ولي أمرك بشأن تسجيلك في هذا التطبيق ؟',
+                          items: fatherKnowsOptions.keys.toList(),
+                          selectedItem: _selectedFatherKnowAboutApp,
+                          onSelected: (item) => {
+                            setState(() {
+                              _selectedFatherKnowAboutApp = item;
+                            })
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select an option';
+                              return 'يجب أن تحددي أحد الخيارات هنا';
                             }
                             return null;
                           },
+                          hintText: 'هل ولي أمرك يعلم بتسجيلك هنا ؟',
                         ),
+
                         const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedFatherAcceptMarriageWithoutQaima,
-                          // Initially selected value
-                          decoration: const InputDecoration(
-                            labelText:
-                                'Does your father accept marriage without qaima?',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: fatherAcceptMarriageWithoutQaima.entries
-                              .map((entry) => DropdownMenuItem<String>(
-                                    value: entry.key,
-                                    child: Text(entry.value),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            _selectedFatherAcceptMarriageWithoutQaima = value;
+                        SingleSelectionDropdown(
+                          title:
+                              'هل يعلم ولي أمرك بشأن تسجيلك في هذا التطبيق ؟',
+                          items: fatherAcceptMarriageWithoutQaima.keys.toList(),
+                          selectedItem:
+                              _selectedFatherAcceptMarriageWithoutQaima,
+                          onSelected: (item) => {
+                            setState(() {
+                              _selectedFatherAcceptMarriageWithoutQaima = item;
+                            })
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select an option';
+                              return 'يجب أن تحددي أحد الخيارات هنا';
                             }
                             return null;
                           },
+                          hintText: 'هل يقبل ولي أمرك بالزواج الشرعي ؟',
                         ),
+
                         const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedYouAcceptMarriageWithoutQaima == true
-                              ? 'yes'
-                              : 'no',
-                          // Initially selected value
-                          decoration: const InputDecoration(
-                            labelText:
-                                'Does you accept marriage without qaima?',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: youAcceptMarriageWithoutQaima.entries
-                              .map((entry) => DropdownMenuItem<String>(
-                                    value: entry.key,
-                                    child: Text(entry.value),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            if (value?.toLowerCase() == "yes") {
-                              _selectedYouAcceptMarriageWithoutQaima = true;
-                            } else if (value?.toLowerCase() == "no") {
-                              _selectedYouAcceptMarriageWithoutQaima = false;
-                            }
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select an option';
-                            }
-                            return null;
-                          },
-                        ),
+                        // DropdownButtonFormField<String>(
+                        //   value: _selectedYouAcceptMarriageWithoutQaima == true
+                        //       ? 'yes'
+                        //       : 'no',
+                        //   // Initially selected value
+                        //   decoration: const InputDecoration(
+                        //     labelText:
+                        //         'Does you accept marriage without qaima?',
+                        //     border: OutlineInputBorder(),
+                        //   ),
+                        //   items: youAcceptMarriageWithoutQaima.entries
+                        //       .map((entry) => DropdownMenuItem<String>(
+                        //             value: entry.key,
+                        //             child: Text(entry.value),
+                        //           ))
+                        //       .toList(),
+                        //   onChanged: (value) {
+                        //     if (value?.toLowerCase() == "yes") {
+                        //       _selectedYouAcceptMarriageWithoutQaima = true;
+                        //     } else if (value?.toLowerCase() == "no") {
+                        //       _selectedYouAcceptMarriageWithoutQaima = false;
+                        //     }
+                        //   },
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please select an option';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
                         const SizedBox(height: 16),
                       ],
                     )
@@ -809,7 +837,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     // Validator for required fields
     String? _requiredFieldValidator(String? value) {
       if (value == null || value.isEmpty) {
-        return 'This field is required';
+        return 'هذا الحقل مطلوب';
       }
       return null;
     }
@@ -823,115 +851,131 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 16),
-              // Profession input with validation
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Education Level',
-                  border: OutlineInputBorder(),
-                ),
-                value: _selectedEducationLevel,
-                items: educationLevels.map((level) {
-                  return DropdownMenuItem<String>(
-                    value: level,
-                    child: Text(level),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              SingleSelectionDropdown(
+                title: 'الشهادة التعليمية',
+                items: educationLevels,
+                selectedItem: _selectedEducationLevel,
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    _selectedEducationLevel = value;
+                    _selectedEducationLevel = item;
                   });
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select an education level';
+                    return 'من فضلك اختر شهادتك التعليمية';
                   }
                   return null;
                 },
-              ),
-
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Profession'),
-                validator: _requiredFieldValidator,
-                controller: professionController,
+                hintText: 'اختر شهادتك التعليمية',
               ),
               const SizedBox(height: 16),
-
-              // Marital Status dropdown with validation
-              DropdownButtonFormField<String>(
-                value: _selectedMaritalStatus,
-                decoration: const InputDecoration(labelText: 'Marital Status'),
-                items: getMaritalStatusOptions().map((status) {
-                  return DropdownMenuItem(
-                    value: status,
-                    child: Text(status),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              SingleSelectionDropdown(
+                title: 'الحالة الاجتماعية',
+                items: getMaritalStatusOptions(),
+                selectedItem: _selectedMaritalStatus,
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    _selectedMaritalStatus = value;
-                    // Show child inputs if the marital status is not "Single"
-                    var keyword = _selectedGender == "male" ? 'أعزب' : 'عزباء';
-                    hasChildren = value != keyword;
+                    _selectedMaritalStatus = item;
                   });
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select your marital status';
+                    return 'من فضلك اختر حالتك الاجتماعية';
                   }
                   return null;
                 },
+                hintText: 'اختر حالتك الاجتماعية',
               ),
-              const SizedBox(height: 16),
+
               // Conditionally show child input fields if marital status is not "Single"
-              if (hasChildren) ...[
+              if (_selectedMaritalStatus != null &&
+                  _selectedMaritalStatus!.isNotEmpty &&
+                  !['أعزب', 'عزباء'].contains(_selectedMaritalStatus!)) ...[
+                const SizedBox(height: 16),
                 // Number of boys input
-                TextFormField(
+                CustomTextField(
                   controller: boysController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(labelText: 'Number of Boys'),
+                  hintText: 'عدد الأولاد (الذكور)',
+                  keyboardType: const TextInputType.numberWithOptions(
+                      signed: false, decimal: false),
+                  preIconPadding: 11,
+                  prefixIcon: Icon(
+                    Icons.boy_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   validator: (value) {
                     if (hasChildren && (value == null || value.isEmpty)) {
-                      return 'Please enter the number of boys';
+                      return 'من فضلك ادخل عدد أولادك الذكور';
                     }
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 16),
 
                 // Number of girls input
-                TextFormField(
+                CustomTextField(
                   controller: girlsController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(labelText: 'Number of Girls'),
+                  hintText: 'عدد الأولاد (الإناث)',
+                  keyboardType: const TextInputType.numberWithOptions(
+                      signed: false, decimal: false),
+                  preIconPadding: 11,
+                  prefixIcon: Icon(
+                    Icons.girl_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   validator: (value) {
                     if (hasChildren && (value == null || value.isEmpty)) {
-                      return 'Please enter the number of girls';
+                      return 'من فضلك ادخل عدد أولادك البنات';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
               ],
               const SizedBox(height: 16),
-              // About Me input with validation
-              TextFormField(
-                controller: aboutMeController,
-                decoration: const InputDecoration(labelText: 'About Me'),
-                maxLines: 3,
+              CustomTextField(
+                controller: professionController,
+                hintText: 'الوظيفة/العمل',
+                keyboardType: TextInputType.text,
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.work_outline_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 validator: _requiredFieldValidator,
               ),
               const SizedBox(height: 16),
-              // About my partner input with validation
-              TextFormField(
-                controller: aboutMyPartnerController,
-                decoration:
-                    const InputDecoration(labelText: 'About My Partner'),
-                maxLines: 3,
+              // About Me input with validation
+              CustomTextField(
+                controller: aboutMeController,
+                hintText: 'تكلم عن نفسك أو ما يقوله الناس عنك',
+                keyboardType: TextInputType.multiline,
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.more_horiz_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 validator: _requiredFieldValidator,
+                maxLines: 5,
               ),
+
+              const SizedBox(height: 16),
+              // About my partner input with validation
+              CustomTextField(
+                controller: aboutMyPartnerController,
+                hintText: 'ما هي المواصفات التي تريدها في زوجك ؟',
+                keyboardType: TextInputType.multiline,
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.more_horiz_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                validator: _requiredFieldValidator,
+                maxLines: 5,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -954,11 +998,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
     String? _requiredTextValidator(String? value) {
       if (value == null || value.isEmpty) {
-        return 'This field is required';
+        return 'هذا الحقل مطلوب';
       }
       return null;
     }
-
     return Form(
       key: _familyInfoFormKey,
       child: Padding(
@@ -968,69 +1011,116 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Father Alive Switch
-              SwitchListTile(
-                title: const Text('Father Alive'),
-                value: isFatherAlive,
-                onChanged: (value) {
+              SingleSelectionDropdown(
+                title: 'هل والدك حي ؟',
+                items: const ['نعم, حفظه الله', 'متوفى, رحمه الله'],
+                selectedItem: (isFatherAlive != null || isFatherAlive!)  ? 'نعم, حفظه الله' : 'متوفى, رحمه الله',
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    isFatherAlive = value;
+                    isFatherAlive = item == "نعم, حفظه الله" ? true : false;
                   });
                 },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'من فضلك اختر اجابة محددة';
+                  }
+                  return null;
+                },
+                hintText: 'الوالد',
               ),
               const SizedBox(height: 16),
-
-              // Conditionally show Father's Job field
-              if (isFatherAlive)
-                TextFormField(
+              if (isFatherAlive != null) ...[
+                CustomTextField(
                   controller: fatherJobController,
-                  decoration: const InputDecoration(labelText: 'Father\'s Job'),
-                  validator: _requiredTextValidator,
+                  hintText: "عمل الوالد",
+                  keyboardType: TextInputType.text,
+                  preIconPadding: 11,
+                  prefixIcon: Icon(
+                    Icons.work_outline_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  validator: (value) {
+                    if ((value == null || value.isEmpty)) {
+                      return 'من فضلك ادخل عمل الوالد';
+                    }
+                    return null;
+                  },
                 ),
-              const SizedBox(height: 16),
-
-              // Mother Alive Switch
-              SwitchListTile(
-                title: const Text('Mother Alive'),
-                value: isMotherAlive,
-                onChanged: (value) {
+                const SizedBox(height: 16),
+              ],
+              SingleSelectionDropdown(
+                title: 'هل والدتك على قيد الحياة ؟',
+                items: const ['نعم, حفظها الله', 'متوفاة, رحمها الله'],
+                selectedItem: (isMotherAlive != null || isMotherAlive!)  ? 'نعم, حفظها الله' : 'متوفاة, رحمها الله',
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    isMotherAlive = value;
+                    isMotherAlive = item == "نعم, حفظها الله" ? true : false;
                   });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'من فضلك اختر اجابة محددة';
+                  }
+                  return null;
+                },
+                hintText: 'الوالدة',
+              ),
+              const SizedBox(height: 16),
+              if (isMotherAlive != null) ...[
+                CustomTextField(
+                  controller: motherJobController,
+                  hintText: "عمل الوالدة",
+                  keyboardType: TextInputType.text,
+                  preIconPadding: 11,
+                  prefixIcon: Icon(
+                    Icons.work_outline_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  validator: (value) {
+                    if ((value == null || value.isEmpty)) {
+                      return 'من فضلك ادخل عمل الوالدة';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+              CustomTextField(
+                controller: brothersController,
+                hintText: "عدد الإخوة الذكور",
+                keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: false),
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.numbers_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                validator: (value) {
+                  if ((value == null || value.isEmpty)) {
+                    return 'من فضلك ادخل عدد اخوانك';
+                  }
+                  return null;
                 },
               ),
               const SizedBox(height: 16),
-
-              // Conditionally show Mother's Job field
-              if (isMotherAlive)
-                TextFormField(
-                  controller: motherJobController,
-                  decoration: const InputDecoration(labelText: 'Mother\'s Job'),
-                  validator: _requiredTextValidator,
-                ),
-              const SizedBox(height: 16),
-
-              // Number of Brothers
-              TextFormField(
-                controller: brothersController,
-                decoration:
-                    const InputDecoration(labelText: 'Number of Brothers'),
-                keyboardType: TextInputType.number,
-                validator: _requiredNumberValidator,
-              ),
-              const SizedBox(height: 16),
-
-              // Number of Sisters
-              TextFormField(
+              CustomTextField(
                 controller: sistersController,
-                decoration:
-                    const InputDecoration(labelText: 'Number of Sisters'),
-                keyboardType: TextInputType.number,
-                validator: _requiredNumberValidator,
+                hintText: "عدد الأخوات البنات",
+                keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: false),
+                preIconPadding: 11,
+                prefixIcon: Icon(
+                  Icons.numbers_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                validator: (value) {
+                  if ((value == null || value.isEmpty)) {
+                    return 'من فضلك ادخل عدد اخواتك';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
-
-              // Submit Button
             ],
           ),
         ),
@@ -1041,42 +1131,61 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   // Step 5: Religious Information
   Widget buildReligiousInfoStep(BuildContext context) {
     // Praying frequency options
-    List<Map<String, String>> prayFrequencyOptions = [
-      {"value": "كل الصلوات في المسجد", "label": "كل الصلوات في المسجد"},
-      {"value": "معظم الصلوات في المسجد", "label": "معظم الصلوات في المسجد"},
-      {"value": "معظم الصلوات في البيت", "label": "معظم الصلوات في البيت"},
-      {"value": "متقطع في الصلاة", "label": "متقطع في الصلاة"},
-      {"value": "لا أصلي والعياذ بالله", "label": "لا أصلي والعياذ بالله"},
+    List<String> prayFrequencyOptionsStrings = [
+      'كل الصلوات في المسجد',
+      'معظم الصلوات في المسجد',
+      'معظم الصلوات في البيت',
+      'متقطع في الصلاة',
+      'لا أصلي والعياذ بالله',
     ];
     if (_selectedGender == "female") {
-      prayFrequencyOptions.removeRange(0, 2);
+      prayFrequencyOptionsStrings.removeRange(0, 2);
     }
     // Azkar practice options
-    List<Map<String, String>> azkarPracticeOptions = [
-      {"value": "دائمًا", "label": "دائمًا"},
-      {"value": "أحيانًا", "label": "أحيانًا"},
-      {"value": "لا", "label": "لا"},
+    List<String> azkarPracticeOptionsStrings = [
+      "دائمًا",
+      "أحيانًا",
+      "لا",
     ];
 
-    List<Map<String, dynamic>> quranMemorizationChoices =
-        List.generate(31, (index) {
-      if (index == 0) {
-        return {"value": 0, "label": "قصار السور"};
-      } else if (index == 1) {
-        return {"value": 1, "label": "جزء واحد"};
-      } else if (index == 2) {
-        return {"value": 2, "label": "جزءان"};
-      } else if (index >= 3 && index <= 10) {
-        return {"value": index, "label": "$index أجزاء"};
-      } else {
-        return {"value": index, "label": "$index جزءًا"};
-      }
-    });
+    Map<int, String> quranMemorizationChoices = {
+      0: 'قصار السور',
+      1: 'جزء واحد',
+      2: 'جزءان',
+      3: '3 أجزاء',
+      4: '4 أجزاء',
+      5: '5 أجزاء',
+      6: '6 أجزاء',
+      7: '7 أجزاء',
+      8: '8 أجزاء',
+      9: '9 أجزاء',
+      10: '10 أجزاء',
+      11: '11 جزءًا',
+      12: '12 جزءًا',
+      13: '13 جزءًا',
+      14: '14 جزءًا',
+      15: '15 جزءًا',
+      16: '16 جزءًا',
+      17: '17 جزءًا',
+      18: '18 جزءًا',
+      19: '19 جزءًا',
+      20: '20 جزءًا',
+      21: '21 جزءًا',
+      22: '22 جزءًا',
+      23: '23 جزءًا',
+      24: '24 جزءًا',
+      25: '25 جزءًا',
+      26: '26 جزءًا',
+      27: '27 جزءًا',
+      28: '28 جزءًا',
+      29: '29 جزءًا',
+      30: '30 جزءًا',
+    };
 
     // Validators
     String? _requiredFieldValidator(String? value) {
       if (value == null || value.isEmpty) {
-        return 'This field is required';
+        return 'هذا الحقل مطلوب';
       }
       return null;
     }
@@ -1091,84 +1200,81 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Memorized Quran Parts input with validation
-              DropdownButtonFormField<int>(
-                value: _selectedQuranParts,
-                // Default value: 0
-                decoration:
-                    const InputDecoration(labelText: 'أجزاء القرآن المحفوظة'),
-                items: quranMemorizationChoices
-                    .map((choice) => DropdownMenuItem<int>(
-                          value: choice["value"],
-                          child: Text(choice["label"]),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  // Save the selected value
-                  _selectedQuranParts = value;
+              SingleSelectionDropdown(
+                title: 'أجزاء القرآن المحفوظة',
+                items: quranMemorizationChoices.keys.map((item)=> item.toString()).toList(),
+                selectedItem: quranMemorizationChoices[_selectedQuranParts],
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
+                  setState(() {
+                    _selectedQuranParts = int.tryParse(item!);
+                  });
                 },
-                validator: (value) => value == null ? 'هذا الحقل مطلوب' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'من فضلك اختر اجابة محددة';
+                  }
+                  return null;
+                },
+                hintText: 'حفظ القرآن',
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: relationWithFamilyController,
+                hintText: 'كيف هي علاقتك مع أهلك وأسرتك ؟',
                 keyboardType: TextInputType.text,
-                decoration:
-                    const InputDecoration(labelText: 'Relation with Family'),
+                preIconPadding: 11,
+                prefixIcon: const Icon(Icons.people_outline_outlined),
                 validator: _requiredFieldValidator,
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedPrayFrequency,
-                decoration:
-                    const InputDecoration(labelText: 'Praying Frequency'),
-                items: prayFrequencyOptions.map((option) {
-                  return DropdownMenuItem(
-                    value: option["value"],
-                    child: Text(option["label"]!),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              SingleSelectionDropdown(
+                title: 'كيف أنت مع الصلاة ؟',
+                items: prayFrequencyOptionsStrings,
+                selectedItem: _selectedPrayFrequency,
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    _selectedPrayFrequency = value;
+                    _selectedPrayFrequency = item;
                   });
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a praying frequency';
+                    return 'من فضلك اختر اجابة محددة';
                   }
                   return null;
                 },
+                hintText: 'الصلاة',
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedAzkarPractice,
-                decoration: const InputDecoration(labelText: 'Azkar Practice'),
-                items: azkarPracticeOptions.map((option) {
-                  return DropdownMenuItem(
-                    value: option["value"],
-                    child: Text(option["label"]!),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              SingleSelectionDropdown(
+                title: 'هل تحافظ على أذكار الصباح والمساء ؟',
+                items: azkarPracticeOptionsStrings,
+                selectedItem: _selectedAzkarPractice,
+                // Optional: set an initial selected item
+                onSelected: (String? item) {
                   setState(() {
-                    _selectedAzkarPractice = value;
+                    _selectedAzkarPractice = item;
                   });
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select an azkar practice';
+                    return 'من فضلك اختر اجابة محددة';
                   }
                   return null;
                 },
+                hintText: 'الأذكار',
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: wantIslamicMarriageController,
+                hintText: 'ما هو مفهومك عن الزواج الشرعي ؟',
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                    labelText: 'Do you want Islamic marriage ?'),
+                preIconPadding: 11,
+                prefixIcon: const Icon(Icons.check),
                 validator: _requiredFieldValidator,
               ),
+
               const SizedBox(height: 16),
             ],
           ),
@@ -1187,10 +1293,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           children: [
             Container(
               child: const Text(
-                "أقسم بالله العظيم أن التزم بالأدب والأخلاق الإسلامية، وأن يكون هدفي من التسجيل في هذا التطبيق هو الزواج الشرعي بما يرضي الله تعالى، وليس لأي غرض آخر.",
+                "أقسم بالله العظيم أن التزم الآداب والأخلاق الإسلامية، وأن يكون هدفي من التسجيل في هذا التطبيق هو الزواج الشرعي بما يرضي الله تعالى، وليس لأي غرض آخر.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),

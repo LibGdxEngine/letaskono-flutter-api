@@ -2,6 +2,7 @@ class Notification {
   final int id;
   final String title;
   final String message;
+  final String? messageAction;
   final DateTime createdAt;
   final bool isRead;
 
@@ -9,6 +10,7 @@ class Notification {
     required this.id,
     required this.title,
     required this.message,
+    this.messageAction,
     required this.createdAt,
     required this.isRead,
   });
@@ -19,6 +21,7 @@ class Notification {
       id: json['id'],
       title: json['title'],
       message: json['message'],
+      messageAction: json['message_action'],
       createdAt: DateTime.parse(json['created_at']),
       isRead: json['is_read'],
     );
@@ -32,6 +35,7 @@ class Notification {
       'message': message,
       'created_at': createdAt.toIso8601String(),
       'is_read': isRead,
+      'message_action': messageAction
     };
   }
 }

@@ -35,7 +35,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         // Initial load
         try {
           final users = await fetchRequestsUseCase(page: event.page);
-          emit(RequestsLoaded(users, event.page, users.isNotEmpty));
+          emit(RequestsLoaded(List.from(users), event.page, users.isNotEmpty));
         } catch (error) {
           emit(RequestsError(error.toString()));
         }

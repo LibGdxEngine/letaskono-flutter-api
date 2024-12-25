@@ -9,6 +9,7 @@ class Profile {
   final String state;
   final String city;
   final String? phoneNumber;
+  final String? nationality;
   final String? fathersPhone;
   final String educationLevel;
   final String profession;
@@ -25,6 +26,7 @@ class Profile {
   final String prayerFrequency;
   final int memorizedQuranParts;
   final String relationWithFamily;
+  final String? le7ya;
   final bool islamicMarriage;
   final String? whoDoYouListenTo;
   final String? doAcquireKnowledge;
@@ -61,6 +63,8 @@ class Profile {
     required this.age,
     this.createdAt,
     this.updatedAt,
+    this.le7ya,
+    this.nationality,
     required this.country,
     required this.state,
     required this.city,
@@ -113,6 +117,7 @@ class Profile {
 
   // Factory constructor to create Profile object from JSON
   factory Profile.fromJson(Map<String, dynamic> json) {
+
     return Profile(
       code: json['code'],
       fcmToken: json['fcm_token'],
@@ -123,6 +128,7 @@ class Profile {
       country: json['country'],
       state: json['state'],
       city: json['city'],
+      nationality: json['nationality'],
       phoneNumber: json['phone_number'],
       fathersPhone: json['fathers_phone'],
       educationLevel: json['education_level'],
@@ -137,6 +143,7 @@ class Profile {
       aboutMe: json['about_me'],
       azkar: json['azkar'],
       hijab: json['hijab'],
+      le7ya: json['le7ya'],
       prayerFrequency: json['prayer_frequency'],
       memorizedQuranParts: json['memorized_quran_parts'],
       relationWithFamily: json['relation_with_family'],
@@ -182,6 +189,8 @@ class Profile {
       'age': age,
       'country': country,
       'state': state,
+      'le7ya': le7ya,
+      'nationality': nationality,
       'city': city,
       'phone_number': phoneNumber,
       'fathers_phone': fathersPhone,

@@ -24,7 +24,7 @@ class CustomButton extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     // Define padding, corner radius, and font size based on the screen size
-    double paddingVerticalValue = screenHeight * 0.02; // 5% of screen width
+    double paddingVerticalValue = screenHeight * 0.012; // 5% of screen width
     double paddingHorizontalValue = screenWidth * 0.03; // 5% of screen width
     double borderRadiusValue = screenWidth * 0.09; // 8% of screen width
     double fontSize = screenWidth * 0.04; // 5% of screen width

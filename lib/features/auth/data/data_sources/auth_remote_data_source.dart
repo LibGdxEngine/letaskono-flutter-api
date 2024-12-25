@@ -85,7 +85,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
-
+      print(response.data);
       if (response.statusCode != 200) {
         throw AuthException('Failed to submit profile');
       }
@@ -119,15 +119,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
         },
       );
-      print(response.statusCode);
-      print(response.data);
       if (!_isSuccessStatusCode(response.statusCode)) {
         throw AuthException('Login failed');
       }
       Map<String, dynamic> responseMap = jsonDecode(response.toString());
       return responseMap['token'];
     } on DioException catch (e) {
-      print(e);
       throw _handleError(e);
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
+  final String prefexText;
   final TextEditingController? controller;
   final TextInputType keyboardType;
   final bool obscureText;
@@ -10,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final double? preIconPadding;
+  final int? maxLines;
 
   const CustomTextField({
     Key? key,
@@ -18,8 +20,10 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.validator,
+    this.prefexText = "",
     this.onChanged,
     this.prefixIcon,
+    this.maxLines = 1,
     this.suffixIcon,
     this.preIconPadding = 8,
   }) : super(key: key);
@@ -38,20 +42,23 @@ class CustomTextField extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
         onChanged: onChanged,
+        validator: validator,
+        maxLines: maxLines,
         decoration: InputDecoration(
           hintText: hintText,
+          prefixText: prefexText,
+          hintTextDirection: TextDirection.rtl,
           hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.inverseSurface,
             fontFamily: 'NotoKufiArabic',
             fontSize: fontSize, // Responsive font size for hint text
           ),
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.inversePrimary,
+          filled: false,
           // Background color
           contentPadding: EdgeInsets.symmetric(
             vertical: contentPaddingVertical, // Adjust padding dynamically

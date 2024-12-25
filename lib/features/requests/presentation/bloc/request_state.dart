@@ -18,7 +18,7 @@ class RequestsLoaded extends RequestState {
   RequestsLoaded(this.requests, this.currentPage, this.hasMore);
 
   @override
-  List<Object?> get props => [requests, currentPage, hasMore];
+  List<Object?> get props => [requests];
 }
 
 class RequestsLoadingMore extends RequestState {

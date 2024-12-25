@@ -51,6 +51,14 @@ class MultiSelectionDropdown extends StatelessWidget {
               ),
             ),
             fit: FlexFit.loose,
+            itemBuilder: (c, item, b,j){
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Text(item, style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    fontSize: 18
+                )),
+              );
+            },
             title: Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.inversePrimary),
@@ -69,6 +77,7 @@ class MultiSelectionDropdown extends StatelessWidget {
           enabled: isEnabled,
           onSelected: onSelected,
           selectedItems: selectedItems,
+
         ),
       ],
     );

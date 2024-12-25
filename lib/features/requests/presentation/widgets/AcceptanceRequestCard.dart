@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hijri/hijri_calendar.dart';
+import 'package:letaskono_flutter/core/utils/CustomButton.dart';
+import 'package:letaskono_flutter/features/requests/data/models/request_type.dart';
 import 'package:letaskono_flutter/features/requests/domain/entities/AcceptanceRequestEntity.dart';
 
 class AcceptanceRequestCard extends StatelessWidget {
@@ -15,47 +18,71 @@ class AcceptanceRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Sender: ${request.sender}",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text("Receiver: ${request.receiver}"),
-            const SizedBox(height: 8),
-            Text("Timestamp: ${request.timestamp}"),
-            const SizedBox(height: 8),
-            Text("Status: ${request.status}"),
-            const SizedBox(height: 16),
-            if (request.status == "SENT") // Show buttons only for SENT status
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
+    const Map<String, String> requestStatusTranslations = {
+      'SENT': 'مرسل',
+      'ACCEPTED': 'مقبول',
+      'REJECTED': 'مرفوض',
+      'TIMED_OUT': 'انتهت المهلة',
+    };
+    final date = DateTime.parse(request.timestamp);
+    final hDate = HijriCalendar.fromDate(date);
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            request.requestType == RequestType.sent
+                ? "لقد أرسلت طلب قبول لـ${request.sender}"
+                : "لقد تلقيت طلب قبول من  ${request.sender}",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("حالة الطلب: ${requestStatusTranslations[request.status]}"),
+              const SizedBox(height: 8),
+              Text("بتاريخ: ${hDate}"),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (request.status == "ACCEPTED")
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
                     onPressed: () => onAccept(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
-                    child: const Text("Accept"),
+                    child: const Text("مشاهدة التفاصيل"),
                   ),
-                  ElevatedButton(
-                    onPressed: () => onReject(),
+                ),
+              ],
+            ),
+          if (request.status == "SENT") // Show buttons only for SENT status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => onAccept(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
-                    child: const Text("Reject"),
+                    child: const Text("مشاهدة التفاصيل"),
                   ),
-                ],
-              ),
-          ],
-        ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 16),
+          Divider(
+            height: 1,
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+          ),
+        ],
       ),
     );
   }

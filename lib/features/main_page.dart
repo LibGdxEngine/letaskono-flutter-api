@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:letaskono_flutter/features/chat/presentation/pages/chat_list_main.dart';
 import 'package:letaskono_flutter/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:letaskono_flutter/features/requests/presentation/pages/requests_page.dart';
 import 'package:letaskono_flutter/features/users/presentation/pages/favourites_page.dart';
@@ -17,10 +18,11 @@ class _HomePageState extends State<HomePage> {
 
   // List of screens for navigation
   final List<Widget> _screens = [
-    UsersPage(),
-    RequestsList(),
-    FavouritesList(),
-    NotificationsPage(),
+    const UsersPage(),
+    const RequestsList(),
+    const FavouritesList(),
+    const ChatListMain(),
+    // const NotificationsPage(),
     // Center(child: Text('المقالات')),
   ];
 
@@ -28,11 +30,74 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('لتسكنوا', style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-          fontWeight: FontWeight.bold
-        ),),
+        title: Text(
+          'لتسكنوا',
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
         actions: [
-
+          const SizedBox(
+            width: 8,
+          ),
+          GestureDetector(
+            onTap: () async {
+              final nextPath =
+                  await Navigator.pushNamed(context, "/notifications");
+              if (nextPath != null) {
+                switch (nextPath) {
+                  case 'chat':
+                    setState(() {
+                      _selectedIndex = 3;
+                    });
+                    break;
+                  case "requests":
+                    setState(() {
+                      _selectedIndex = 1;
+                    });
+                    break;
+                }
+              }
+            },
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey, // Customize the border color
+                      width: 1.0, // Customize the border width
+                    ),
+                  ),
+                  child: const Icon(Icons.notifications_none_outlined),
+                ),
+                Positioned(
+                  top: 12.0, // Adjust the position of the dot
+                  right: 10.0, // Adjust the position of the dot
+                  child: Container(
+                    height: 10, // Adjust the size of the dot
+                    width: 10, // Adjust the size of the dot
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white, // Customize the border color
+                        width: 2.0, // Customize the border width
+                      ),
+                      shape: BoxShape.circle,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.5), // Customize the dot color
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
         ],
       ),
       drawer: Drawer(
@@ -101,9 +166,9 @@ class _HomePageState extends State<HomePage> {
                   label: 'المحفوظات',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.notifications_outlined,
+                  icon: Icon(Icons.chat_bubble_outline,
                       color: Theme.of(context).colorScheme.primary),
-                  selectedIcon: Icon(Icons.notifications, color: Colors.white),
+                  selectedIcon: Icon(Icons.chat_bubble, color: Colors.white),
                   label: 'التنبيهات',
                 ),
                 // NavigationDestination(

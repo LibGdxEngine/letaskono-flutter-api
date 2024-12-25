@@ -16,7 +16,6 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<List<UserEntity>> fetchUsers(
       {int page = 1, SearchEntity? query}) async {
-
     // Fetch users from the remote data source
     final List<User> users =
         await remoteDataSource.fetchUsers(page: page, query: query);
@@ -81,6 +80,9 @@ class UserRepositoryImpl extends UserRepository {
       pkid: user.pkid,
       preferredCountry: user.profile.preferredCountry,
       azkar: user.profile.azkar,
+      le7ya: user.profile.le7ya,
+      nationality: user.profile.nationality,
+      lookingFor: user.profile.lookingFor,
       prayerFrequency: user.profile.prayerFrequency,
       code: user.profile.code,
       gender: user.profile.gender,
@@ -98,15 +100,20 @@ class UserRepositoryImpl extends UserRepository {
       weight: user.profile.weight,
       skinColor: user.profile.skinColor,
       aboutMe: user.profile.aboutMe,
+      languagesSpoken: user.profile.languagesSpoken,
       islamicMarriage: user.profile.islamicMarriage,
       fatherAlive: user.profile.fatherAlive,
+      fatherOccupation: user.profile.fatherOccupation,
       motherAlive: user.profile.motherAlive,
+      motherOccupation: user.profile.motherOccupation,
       numberOfBrothers: user.profile.numberOfBrothers,
       numberOfSisters: user.profile.numberOfSisters,
       wantQaima: user.profile.wantQaima,
       requestSendingStatus: user.profile.requestSendingStatus,
       isBlocked: user.profile.isBlocked,
+      relationWithFamily: user.profile.relationWithFamily,
       isDisabled: user.profile.isDisabled,
+      hijab: user.profile.hijab,
       isAccountConfirmed: user.profile.isAccountConfirmed,
       fcmToken: user.profile.fcmToken,
       country: user.profile.country,
@@ -138,5 +145,15 @@ class UserRepositoryImpl extends UserRepository {
       hijab: user.hijab,
       le7ya: user.le7ya,
     );
+  }
+
+  @override
+  Future<String> setOffline() async {
+    return await remoteDataSource.setOffline();
+  }
+
+  @override
+  Future<String> setOnline() async {
+    return await remoteDataSource.setOnline();
   }
 }

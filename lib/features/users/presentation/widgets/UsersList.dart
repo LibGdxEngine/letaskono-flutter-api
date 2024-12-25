@@ -10,11 +10,13 @@ import 'MatchCard.dart';
 
 class UsersList extends StatefulWidget {
   final bool isFavourite;
+  final UserBloc userBloc;
 
   const UsersList({
-    Key? key,
+    super.key,
     required this.isFavourite,
-  }) : super(key: key);
+    required this.userBloc,
+  });
 
   @override
   State<UsersList> createState() => _UsersListState();
@@ -26,20 +28,20 @@ class _UsersListState extends State<UsersList> {
   @override
   void initState() {
     super.initState();
+    widget.userBloc.add(SetOnlineEvent());
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
-    final bloc = context.read<UserBloc>();
-    final state = bloc.state;
+    final state = widget.userBloc.state;
 
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent &&
         state is UsersLoaded &&
         state.hasMore) {
       widget.isFavourite
-          ? bloc.add(FetchFavouritesEvent(page: state.currentPage + 1))
-          : bloc.add(FetchUsersEvent(page: state.currentPage + 1));
+          ? widget.userBloc.add(FetchFavouritesEvent(page: state.currentPage + 1))
+          : widget.userBloc.add(FetchUsersEvent(page: state.currentPage + 1));
     }
   }
 
@@ -47,7 +49,7 @@ class _UsersListState extends State<UsersList> {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
-        if (state is UserLoading ) {
+        if (state is UserLoading) {
           return Center(child: ExpandingCircleProgress());
         } else if (state is UsersLoaded) {
           var genderSaved =
@@ -176,7 +178,7 @@ class _UsersListState extends State<UsersList> {
         } else if (state is UsersError) {
           return Center(child: Text('Error: ${state.error}'));
         } else {
-          return const Center(child: Text('...'));
+          return Center(child: ExpandingCircleProgress());
         }
       },
     );
@@ -185,6 +187,7 @@ class _UsersListState extends State<UsersList> {
   @override
   void dispose() {
     _scrollController.dispose();
+    widget.userBloc.add(SetOfflineEvent());
     super.dispose();
   }
 }

@@ -58,3 +58,7 @@ class FetchUserDetailsEvent extends UsersEvent {
 
   FetchUserDetailsEvent(this.userId);
 }
+
+class SetOnlineEvent extends UsersEvent {}
+
+class SetOfflineEvent extends UsersEvent {}

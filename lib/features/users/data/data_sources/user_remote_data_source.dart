@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/core/utils/CustomException.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,6 +29,10 @@ abstract class UserRemoteDataSource {
   Future<String> acceptRequest(int requestId);
 
   Future<String> rejectRequest(int requestId);
+
+  Future<String> setOnline();
+
+  Future<String> setOffline();
 }
 
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
@@ -53,7 +58,6 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
           response.data['results']; // Dio directly gives JSON-decoded response
 
       var users = responseList.map((data) => User.fromJson(data)).toList();
-
 
       // Map the response to User objects
       return users;
@@ -94,9 +98,12 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
+      if (response.data is Map<String, dynamic>) {
+        return "تم إرسال طلب القبول بنجاح";
+      }
       return response.data;
     } on DioException catch (e) {
-      throw Exception(e.response?.data.toString());
+      throw Customexception((e.response?.data['error'].toString())!);
     }
   }
 
@@ -113,7 +120,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       );
       return response.data['status'];
     } on DioException catch (e) {
-      throw Exception(e.response?.data.toString());
+      throw Customexception((e.response?.data['error'].toString())!);
     }
   }
 
@@ -205,6 +212,9 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
+      if (response.data is Map<String, dynamic>) {
+        return "تم قبول الطلب";
+      }
       return response.data;
     } on DioException catch (e) {
       throw Exception(e.response?.data.toString());
@@ -225,6 +235,46 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       return response.data;
     } on DioException catch (e) {
       throw Exception(e.response?.data.toString());
+    }
+  }
+
+  @override
+  Future<String> setOnline() async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/profiles/set-online/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      if (response.data is Map<String, dynamic>) {
+        return "أنت متصل";
+      }
+      return response.data;
+    } on DioException catch (e) {
+      throw Customexception((e.response?.data['error'].toString())!);
+    }
+  }
+
+  @override
+  Future<String> setOffline() async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/profiles/set-offline/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      if (response.data is Map<String, dynamic>) {
+        return "أنت غير متصل";
+      }
+      return response.data;
+    } on DioException catch (e) {
+      throw Customexception((e.response?.data['error'].toString())!);
     }
   }
 }

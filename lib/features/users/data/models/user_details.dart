@@ -5,9 +5,9 @@ import 'Profile.dart';
 class UserDetails {
   final String id;
   final String pkid;
-  final String email;
-  final String firstName;
-  final String lastName;
+  final String? email;
+  final String? firstName;
+  final String? lastName;
   final Profile profile;
   final bool isActive;
   final bool emailConfirmed;
@@ -18,9 +18,9 @@ class UserDetails {
   UserDetails({
     required this.id,
     required this.pkid,
-    required this.email,
-    required this.firstName,
-    required this.lastName,
+    this.email,
+    this.firstName,
+    this.lastName,
     required this.profile,
     required this.isActive,
     required this.emailConfirmed,
@@ -30,7 +30,6 @@ class UserDetails {
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) {
-
     return UserDetails(
       id: json['id'],
       pkid: json['pkid'].toString(),

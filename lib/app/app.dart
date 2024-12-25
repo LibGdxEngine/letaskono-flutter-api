@@ -29,7 +29,24 @@ class IslamicDatingApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          appBarTheme:  const AppBarTheme(
+          snackBarTheme: const SnackBarThemeData(
+            backgroundColor: color7895B2,
+            // Your desired background color
+            contentTextStyle: TextStyle(
+              color: colorE8DFCA, // Your desired text color
+              fontFamily: 'NotoKufiArabic', // Your desired font family
+              fontSize: 16.0, // Your desired font size
+            ),
+            behavior: SnackBarBehavior.fixed,
+            // Optional: for floating SnackBar
+            showCloseIcon: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16)), // Optional: rounded corners
+            ),
+          ),
+          appBarTheme: const AppBarTheme(
             elevation: 0,
             surfaceTintColor: colorF5EFE6,
             iconTheme: IconThemeData(
@@ -41,6 +58,8 @@ class IslamicDatingApp extends StatelessWidget {
             primary: color7895B2,
             // Main app color
             secondary: colorAEBDCA,
+            inverseSurface: Color(0xFFDD88CF),
+
             inversePrimary: colorE8DFCA,
             // Background color
             surface: colorF5EFE6,
@@ -60,8 +79,8 @@ class IslamicDatingApp extends StatelessWidget {
           scaffoldBackgroundColor: colorF5EFE6,
           textTheme: const TextTheme(
             headlineSmall: TextStyle(
-                fontSize: 24, // Adjusted for better balance
-                color: color7895B2,
+                fontSize: 16, // Adjusted for better balance
+                color: fontColor,
                 fontFamily: 'NotoKufiArabic'),
             headlineMedium: TextStyle(
                 fontSize: 28, // Slightly smaller for consistency
@@ -77,11 +96,14 @@ class IslamicDatingApp extends StatelessWidget {
                 color: color7895B2,
                 fontFamily: 'NotoKufiArabic'),
             bodyMedium: TextStyle(
-                fontSize: 16, // Ideal for regular body text
+                fontSize: 16,
+                // Ideal for regular body text
                 color: fontColor,
+                fontWeight: FontWeight.w900,
+                height: 1.6,
                 fontFamily: 'NotoKufiArabic'),
             bodyLarge: TextStyle(
-                fontSize: 18,
+                fontSize: 28,
                 // Adjusted for better emphasis without being too large
                 color: fontColor,
                 fontFamily: 'NotoKufiArabic'),
