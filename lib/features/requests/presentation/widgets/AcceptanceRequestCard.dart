@@ -34,7 +34,7 @@ class AcceptanceRequestCard extends StatelessWidget {
           Text(
             request.requestType == RequestType.sent
                 ? "لقد أرسلت طلب قبول لـ${request.sender}"
-                : "لقد تلقيت طلب قبول من  ${request.sender}",
+                : "لقد تلقيت طلب قبول من  ${request.receiver}",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),

@@ -8,9 +8,9 @@ class HttpClient {
     dio.options.baseUrl =
         'http://${Constants.baseUrl}:8000/'; // Set your API base URL
     dio.options.connectTimeout =
-        const Duration(seconds: 5); // 5 seconds timeout
-    dio.options.receiveTimeout = const Duration(seconds: 3);
-    dio.options.sendTimeout = const Duration(seconds: 4);
+        const Duration(seconds: 30); // 15 seconds timeout
+    dio.options.receiveTimeout = const Duration(seconds: 30);
+    dio.options.sendTimeout = const Duration(seconds: 30);
 
     // Set default headers
     dio.options.headers = {
@@ -36,6 +36,12 @@ class HttpClient {
   Future<Response> put(String url,
       {Map<String, dynamic>? data, Map<String, dynamic>? headers}) async {
     return await dio.put(url, data: data, options: Options(headers: headers));
+  }
+
+  // PATCH request with optional headers
+  Future<Response> patch(String url,
+      {Map<String, dynamic>? data, Map<String, dynamic>? headers}) async {
+    return await dio.patch(url, data: data, options: Options(headers: headers));
   }
 
   // DELETE request with optional headers

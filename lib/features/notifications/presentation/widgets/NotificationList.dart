@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:letaskono_flutter/core/utils/ExpandingCircleProgress.dart';
 
 import '../bloc/notification_bloc.dart';
 import 'NotificationCard.dart';
@@ -42,9 +43,9 @@ class _NotificationsListState extends State<NotificationsList> {
         builder: (context, state) {
           if (state is NotificationLoading &&
               state is! NotificationLoadingMore) {
-            return const Center(child: CircularProgressIndicator());
+            return  Center(child: ExpandingCircleProgress());
           } else if (state is NotificationFailed) {
-            return Center(child: Text(state.error));
+            return const Center(child: Text('هناك خطأ في استقبال البيانات !'));
           } else if (state is NotificationLoaded ||
               state is NotificationLoadingMore) {
             final notifications = state is NotificationLoaded

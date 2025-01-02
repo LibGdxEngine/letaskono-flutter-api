@@ -2,4 +2,6 @@ import 'package:letaskono_flutter/features/notifications/domain/entities/notific
 
 abstract class NotificationRepository {
   Future<List<NotificationEntity>> fetchNotifications({int page});
+
+  Future<int> fetchUnreadNotificationsCount();
 }

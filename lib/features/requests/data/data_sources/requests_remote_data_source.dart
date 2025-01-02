@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/core/utils/CustomException.dart';
 import 'package:letaskono_flutter/features/requests/data/models/AcceptanceRequest.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +42,10 @@ class RequestsRemoteDataSourceImpl extends RequestsRemoteDataSource {
 
       // Combine and return the results
       return responses.expand((list) => list).toList();
-    } catch (e) {
+    } on DioException catch (e) {
+      if(e.response?.statusCode != null && e.response?.statusCode == 403){
+        throw Customexception("حسابك غير مفعل بعد, انتظر تفعيله من الإدارة");
+      }
       throw Exception(e);
     }
   }

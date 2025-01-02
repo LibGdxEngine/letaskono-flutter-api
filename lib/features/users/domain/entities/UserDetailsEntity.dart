@@ -51,6 +51,7 @@ class UserDetailsEntity {
   final bool? isBlocked;
   final DateTime? blockUntil;
   final String? blockingReason;
+  final String? disabilities;
   final bool? isDisabled;
   final DateTime? scheduledDeletion;
   final bool? isAccountConfirmed;
@@ -78,6 +79,7 @@ class UserDetailsEntity {
     this.educationLevel,
     this.profession,
     this.maritalStatus,
+    this.disabilities,
     this.children,
     this.numberOfChildBoys,
     this.numberOfChildGirls,
@@ -125,10 +127,12 @@ class UserDetailsEntity {
 
   // Factory constructor to create UserDetailsEntity object from JSON
   factory UserDetailsEntity.fromJson(Map<String, dynamic> json) {
+
     return UserDetailsEntity(
         id: json['id'],
         pkid: json['pkid'],
         code: json['code'],
+        disabilities: json['disabilities'],
         fcmToken: json['fcm_token'],
         gender: json['gender'],
         age: json['age'],
@@ -212,6 +216,7 @@ class UserDetailsEntity {
       'number_of_child_girls': numberOfChildGirls,
       'height': height,
       'weight': weight,
+      'disabilities': disabilities,
       'skin_color': skinColor,
       'about_me': aboutMe,
       'azkar': azkar,

@@ -5,6 +5,8 @@ class ProfileCompletion extends Equatable {
   final int? age;
   final int? weight;
   final String? skinColor;
+  final String? le7ya;
+  final String? hijab;
   final String? country;
   final String? nationality;
   final String? state;
@@ -43,6 +45,8 @@ class ProfileCompletion extends Equatable {
     this.age,
     this.weight,
     this.skinColor,
+    this.le7ya,
+    this.hijab,
     this.country,
     this.nationality,
     this.gender,
@@ -81,6 +85,8 @@ class ProfileCompletion extends Equatable {
   List<Object?> get props => [
         height,
         age,
+        le7ya,
+        hijab,
         weight,
         skinColor,
         country,
@@ -123,6 +129,8 @@ class ProfileCompletion extends Equatable {
       'age': age,
       'weight': weight,
       'skin_color': skinColor,
+      'le7ya': le7ya,
+      'hijab': hijab,
       'country': country,
       'gender': gender,
       'state': state,

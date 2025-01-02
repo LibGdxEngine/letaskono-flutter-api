@@ -2,6 +2,9 @@ import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEnti
 import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
 
+import '../../data/models/user_details.dart';
+import '../entities/UserModifyEntity.dart';
+
 abstract class UserRepository {
   Future<List<UserEntity>> fetchUsers({int page, SearchEntity? query});
 
@@ -26,4 +29,9 @@ abstract class UserRepository {
   Future<String> setOnline();
 
   Future<String> setOffline();
+
+  Future<UserDetailsEntity> fetchCurrentUser();
+
+  Future<UserDetailsEntity> modifyUser(ProfileChangeEntity pce);
+
 }

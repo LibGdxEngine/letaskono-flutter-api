@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/core/utils/CustomException.dart';
 import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
@@ -23,6 +24,8 @@ abstract class AuthRemoteDataSource {
   Future<void> completeProfile(Map<String, dynamic> profileCompletionAsJson);
 
   Future<UserModel> getUserData();
+
+  Future<String> resendActivationCode(String email);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -50,7 +53,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       if (!_isSuccessStatusCode(response.statusCode)) {
-        throw AuthException('Failed to sign up');
+        throw AuthException('فشل تسجيل الحساب');
       }
     } on DioException catch (e) {
       throw _handleError(e);
@@ -85,7 +88,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
-      print(response.data);
       if (response.statusCode != 200) {
         throw AuthException('Failed to submit profile');
       }
@@ -123,6 +125,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw AuthException('Login failed');
       }
       Map<String, dynamic> responseMap = jsonDecode(response.toString());
+
       return responseMap['token'];
     } on DioException catch (e) {
       throw _handleError(e);
@@ -142,10 +145,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final dynamic firstErrorMessages = errorData[firstKey];
 
       if (firstErrorMessages is String) {
-        return AuthException('$firstKey: $firstErrorMessages');
+        return AuthException(firstErrorMessages);
       } else if (firstErrorMessages is List<dynamic>) {
-        return AuthException('$firstKey: ${firstErrorMessages.first}');
+        if (firstErrorMessages.first.toString().contains("Enter a valid")) {
+          return AuthException('هذا البريد غير صحيح');
+        }
+        if (firstErrorMessages.first.toString().contains("The phone number")) {
+          return AuthException(
+              'رقم الهاتف الذي أدخلته غير صالح, أدخل رقما صحيحا');
+        }
+        return AuthException('${firstErrorMessages.first}');
       } else if (firstErrorMessages is Map<String, dynamic>) {
+        if (firstErrorMessages.values.first[0]
+            .toString()
+            .contains("user with this email address already exists")) {
+          return AuthException('هذا الحساب مسجل بالفعل, جرب تسجيل الدخول');
+        }
+        if (firstErrorMessages.keys.contains("password")) {
+          return AuthException(
+              'كلمة السر سهلة التخمين للغاية, اختر كلمة سر أقوى');
+        }
         return SignupException('${firstErrorMessages.values.first[0]}',
             errorData['is_email_confirmed']);
       }
@@ -191,6 +210,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } on DioException catch (e) {
       throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<String> resendActivationCode(String email) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      final response = await httpClient.post(
+        'api/v1/users/resend-activation-code/',
+        data: {"email": email},
+        headers: {
+          "Authorization": "Token $token",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data['detail'];
+    } on DioException catch (e) {
+      final firstKey = e.response?.data.keys.first;
+      throw Customexception((e.response?.data[firstKey][0].toString()) ?? '...');
     }
   }
 }

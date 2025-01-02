@@ -8,3 +8,5 @@ class FetchNotificationsEvent extends NotificationEvent {
 
   FetchNotificationsEvent({this.page = 1, this.isRefreshing = false});
 }
+
+class FetchUnreadNotificationsCountEvent extends NotificationEvent {}

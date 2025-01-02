@@ -12,4 +12,5 @@ abstract class AuthRepository {
   Future<void> completeProfile(ProfileCompletion profileCompletion);
   Future<AuthEntity> getUserData();
   Future<bool> isUserActivated(String userId);
+  Future<String> resendActivationCode(String email);
 }

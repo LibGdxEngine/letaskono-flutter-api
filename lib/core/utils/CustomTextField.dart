@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final double? preIconPadding;
   final int? maxLines;
+  final String? topText;
 
   const CustomTextField({
     Key? key,
@@ -26,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.suffixIcon,
     this.preIconPadding = 8,
+    this.topText,
   }) : super(key: key);
 
   @override
@@ -42,72 +44,86 @@ class CustomTextField extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        onChanged: onChanged,
-        validator: validator,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixText: prefexText,
-          hintTextDirection: TextDirection.rtl,
-          hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.inverseSurface,
-            fontFamily: 'NotoKufiArabic',
-            fontSize: fontSize, // Responsive font size for hint text
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: topText != null ? Text(topText!) : null,
           ),
-          filled: false,
-          // Background color
-          contentPadding: EdgeInsets.symmetric(
-            vertical: contentPaddingVertical, // Adjust padding dynamically
-            horizontal: contentPaddingHorizontal, // Adjust horizontal padding
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadiusValue),
-            // Responsive border radius
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-              width: 1.5,
+          TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            onChanged: onChanged,
+            validator: validator,
+            maxLines: maxLines,
+            textDirection: TextDirection.rtl,
+            decoration: InputDecoration(
+              hintText: hintText,
+              prefixText: prefexText,
+              hintTextDirection: TextDirection.rtl,
+              hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.inverseSurface,
+                fontFamily: 'NotoKufiArabic',
+                fontSize: fontSize, // Responsive font size for hint text
+              ),
+              filled: false,
+              // Background color
+              contentPadding: EdgeInsets.symmetric(
+                vertical: contentPaddingVertical, // Adjust padding dynamically
+                horizontal:
+                    contentPaddingHorizontal, // Adjust horizontal padding
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadiusValue),
+                // Responsive border radius
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadiusValue),
+                borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary, // Focused border color
+                  width: 2.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadiusValue),
+                borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary, // Error border color
+                  width: 2.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadiusValue),
+                borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .secondary, // Default border color
+                  width: 1.5,
+                ),
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(preIconPadding!),
+                child: prefixIcon,
+              ),
+              suffixIcon: suffixIcon,
+            ),
+            style: TextStyle(
+              fontFamily: 'NotoKufiArabic',
+              fontSize: fontSize, // Responsive font size for text input
+              color: Color(0xFF333333), // Text color
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadiusValue),
-            borderSide: BorderSide(
-              color:
-                  Theme.of(context).colorScheme.primary, // Focused border color
-              width: 2.0,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadiusValue),
-            borderSide: BorderSide(
-              color:
-                  Theme.of(context).colorScheme.primary, // Error border color
-              width: 2.0,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadiusValue),
-            borderSide: BorderSide(
-              color: Theme.of(context)
-                  .colorScheme
-                  .secondary, // Default border color
-              width: 1.5,
-            ),
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(preIconPadding!),
-            child: prefixIcon,
-          ),
-          suffixIcon: suffixIcon,
-        ),
-        style: TextStyle(
-          fontFamily: 'NotoKufiArabic',
-          fontSize: fontSize, // Responsive font size for text input
-          color: Color(0xFF333333), // Text color
-        ),
+        ],
       ),
     );
   }

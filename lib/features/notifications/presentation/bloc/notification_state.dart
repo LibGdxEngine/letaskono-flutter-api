@@ -40,3 +40,11 @@ class NotificationFailed extends NotificationState {
 }
 
 class NotificationLoading extends NotificationState {}
+class UnreadNotificationsCountFetched extends NotificationState {
+  final int count;
+
+  const UnreadNotificationsCountFetched(this.count);
+
+  @override
+  List<Object> get props => [count];
+}

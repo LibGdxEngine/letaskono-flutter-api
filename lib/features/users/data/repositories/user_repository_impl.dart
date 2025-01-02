@@ -1,4 +1,5 @@
 import 'package:letaskono_flutter/features/users/data/data_sources/user_remote_data_source.dart';
+import 'package:letaskono_flutter/features/users/domain/entities/UserModifyEntity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/repositories/user_repository.dart';
@@ -78,6 +79,10 @@ class UserRepositoryImpl extends UserRepository {
     return UserDetailsEntity(
       id: user.id,
       pkid: user.pkid,
+      disabilities: user.profile.disabilities,
+      lastSeen: user.profile.lastSeen,
+      whoDoYouListenTo: user.profile.whoDoYouListenTo,
+      hobbies: user.profile.hobbies,
       preferredCountry: user.profile.preferredCountry,
       azkar: user.profile.azkar,
       le7ya: user.profile.le7ya,
@@ -133,6 +138,7 @@ class UserRepositoryImpl extends UserRepository {
       dateJoined: user.dateJoined,
       weight: user.weight,
       height: user.height,
+      isOnline: user.isOnline,
       id: user.id,
       maritalStatus: user.maritalStatus,
       lastSeen: user.lastSeen,
@@ -155,5 +161,17 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<String> setOnline() async {
     return await remoteDataSource.setOnline();
+  }
+
+  @override
+  Future<UserDetailsEntity> fetchCurrentUser() async {
+    final user = await remoteDataSource.fetchCurrentUser();
+    return _mapUserDetailToEntity(user);
+  }
+
+  @override
+  Future<UserDetailsEntity> modifyUser(ProfileChangeEntity pce) async {
+    final user = await remoteDataSource.modifyUser(pce);
+    return _mapUserDetailToEntity(user);
   }
 }

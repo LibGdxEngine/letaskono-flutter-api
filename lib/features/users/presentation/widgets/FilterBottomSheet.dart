@@ -125,7 +125,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           CircularText(
                             text: ageRange.start.round().toString(),
                             size: 24,
-                            borderColor: const Color(0xFFDD88CF),
+                            borderColor: Theme.of(context).colorScheme.primary,
                             borderWidth: 0.8,
                             textStyle: const TextStyle(
                               fontSize: 12,

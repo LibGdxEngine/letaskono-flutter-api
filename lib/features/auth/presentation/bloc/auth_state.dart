@@ -32,3 +32,14 @@ class AuthProfileSubmitted extends AuthState {}
 class AuthPasswordResetEmailSent extends AuthState {}
 
 class AuthPasswordVerified extends AuthState {}
+
+class ActivationEmailResent extends AuthState {
+
+}
+
+class ResendingActivationFailed extends AuthState {
+  final String error;
+
+  const ResendingActivationFailed(this.error);
+
+}

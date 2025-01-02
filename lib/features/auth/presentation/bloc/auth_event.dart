@@ -59,3 +59,9 @@ class SubmitProfileEvent extends AuthEvent {
 
   const SubmitProfileEvent(this.profileCompletion);
 }
+
+class ResendActivationCodeEvent extends AuthEvent {
+  final String email;
+
+  const ResendActivationCodeEvent(this.email);
+}

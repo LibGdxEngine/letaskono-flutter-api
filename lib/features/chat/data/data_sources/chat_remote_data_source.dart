@@ -39,7 +39,7 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
 
   @override
   Stream<dynamic> connectToChat(String roomId) {
-    final url = "ws://${Constants.baseUrl}:8000/ws/chat/$roomId/";
+    final url = "wss://${Constants.baseUrl}/ws/chat/$roomId/";
     try {
       channel = WebSocketChannel.connect(Uri.parse(url));
       return channel!.stream;
@@ -128,7 +128,7 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
       final response = await httpClient.get(
         'api/v1/chats/chatrooms/$roomId',
         headers: {
-          "Authorization": "Token ${token}",
+          "Authorization": "Token $token",
           "Content-Type": "application/json",
         },
       );

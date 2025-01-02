@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/utils/ExpandingCircleProgress.dart';
 import '../bloc/user_bloc.dart';
 import 'GenderToggle.dart';
-import 'MatchCard.dart';
+import 'UserCard.dart';
 
 class UsersList extends StatefulWidget {
   final bool isFavourite;
@@ -24,10 +24,13 @@ class UsersList extends StatefulWidget {
 
 class _UsersListState extends State<UsersList> {
   final ScrollController _scrollController = ScrollController();
+  final _prefs = GetIt.instance<SharedPreferences>();
+  List<String>? visitedUsers;
 
   @override
   void initState() {
     super.initState();
+    visitedUsers = _prefs.getStringList("visited_users") ?? [];
     // widget.userBloc.add(SetOnlineEvent());
     _scrollController.addListener(_onScroll);
   }
@@ -40,7 +43,8 @@ class _UsersListState extends State<UsersList> {
         state is UsersLoaded &&
         state.hasMore) {
       widget.isFavourite
-          ? widget.userBloc.add(FetchFavouritesEvent(page: state.currentPage + 1))
+          ? widget.userBloc
+              .add(FetchFavouritesEvent(page: state.currentPage + 1))
           : widget.userBloc.add(FetchUsersEvent(page: state.currentPage + 1));
     }
   }
@@ -52,9 +56,7 @@ class _UsersListState extends State<UsersList> {
         if (state is UserLoading) {
           return Center(child: ExpandingCircleProgress());
         } else if (state is UsersLoaded) {
-          var genderSaved =
-              GetIt.instance<SharedPreferences>().getString("filter_gender") ??
-                  'F';
+          var genderSaved = _prefs.getString("filter_gender") ?? 'F';
           var maleIsSelected = genderSaved == "M" ? true : false;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
@@ -77,7 +79,7 @@ class _UsersListState extends State<UsersList> {
                       isMaleSelected: maleIsSelected,
                       onChange: (isMaleSelected) => {
                         maleIsSelected = isMaleSelected,
-                        GetIt.instance<SharedPreferences>().setString(
+                        _prefs.setString(
                             "filter_gender", isMaleSelected ? "M" : "F"),
                         context.read<UserBloc>().add(
                               ApplyFiltersEvent(
@@ -121,31 +123,43 @@ class _UsersListState extends State<UsersList> {
                                   userStyle =
                                       "assets/images/photo_of_niqab_colored_woman.png";
                                 } else if (user.hijab == "مختمرة") {
-                                  userStyle = "assets/images/wphoto3.png";
+                                  userStyle = "assets/images/woman.png";
                                 } else if (user.hijab == "طرح وفساتين") {
-                                  userStyle = "assets/images/wphoto4.png";
+                                  userStyle = "assets/images/woman.png";
+                                } else {
+                                  userStyle = "assets/images/woman.png";
                                 }
                               }
-
+                              final visitedBefore =
+                                  visitedUsers?.contains(user.code) ?? false;
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/userDetail',
-                                    arguments: state.users[index]
-                                        .code, // Pass the 'id' as an argument
-                                  );
+                                  setState(() {
+                                    if (!visitedBefore) {
+                                      visitedUsers?.add(user.code);
+                                      _prefs.setStringList(
+                                          "visited_users", visitedUsers ?? []);
+                                    }
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/userDetail',
+                                      arguments: state.users[index]
+                                          .code, // Pass the 'id' as an argument
+                                    );
+                                  });
                                 },
-                                child: MatchCard(
+                                child: UserCard(
                                   imageUrl: userStyle,
                                   userCode: user.code,
                                   styleOfPerson: user.gender == "M"
                                       ? user.le7ya
                                       : user.hijab,
+                                  isOnline: user.isOnline,
                                   maritalStatus: user.maritalStatus,
                                   age: user.age,
                                   nationality: user.nationality,
                                   stateWhereLive: user.state,
+                                  visitedBefore: visitedBefore,
                                 ),
                               );
                             },
@@ -176,7 +190,21 @@ class _UsersListState extends State<UsersList> {
             ),
           );
         } else if (state is UsersError) {
-          return Center(child: Text('Error: ${state.error}'));
+          return Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('هناك خطأ في استقبال البيانات !'),
+              const Text('تأكد من إتمام تفعيل حسابك عن طريق'),
+              const SizedBox(
+                height: 16,
+              ),
+              ElevatedButton(
+                  onPressed: () =>
+                      {Navigator.pushNamed(context, "/profileSetup")},
+                  child: const Text('تعبئة البيانات'))
+            ],
+          ));
         } else {
           return Center(child: ExpandingCircleProgress());
         }

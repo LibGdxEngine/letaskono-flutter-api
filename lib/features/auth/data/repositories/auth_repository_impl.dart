@@ -52,4 +52,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> passwordVerify(String code, String newPassword) async {
     return await remoteDataSource.passwordVerify(code, newPassword);
   }
+
+  @override
+  Future<String> resendActivationCode(String email) async {
+    return await remoteDataSource.resendActivationCode(email);
+  }
+
 }

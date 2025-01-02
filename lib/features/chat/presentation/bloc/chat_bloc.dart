@@ -57,10 +57,11 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
         (message) {
           final messageAsJson = jsonDecode(message);
           if (messageAsJson.containsKey('error')) {
-            add(ReachMessageLimit(messageAsJson['error']));
+            if (!isClosed) add(ReachMessageLimit(messageAsJson['error']));
           } else {
-            // Add the message to the bloc
-            add(ReceiveMessage(ChatMessageEntity.fromJson(messageAsJson)));
+            if (!isClosed) {
+              add(ReceiveMessage(ChatMessageEntity.fromJson(messageAsJson)));
+            }
           }
         },
         onDone: () => print('Done'),

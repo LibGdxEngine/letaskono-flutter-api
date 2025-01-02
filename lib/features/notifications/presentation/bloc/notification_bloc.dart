@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/notifications/domain/use_cases/fetch_notifications.dart';
 import '../../domain/entities/notification_entity.dart';
+import '../../domain/use_cases/fetch_notifications_count.dart';
 
 part 'notification_event.dart';
 
@@ -10,6 +11,8 @@ part 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final FetchNotifications fetchNotificationsUseCase = sl<FetchNotifications>();
+  final FetchUnreadNotificationsCount fetchUnreadNotificationsUseCase =
+      sl<FetchUnreadNotificationsCount>();
 
   NotificationBloc() : super(NotificationLoading()) {
     on<FetchNotificationsEvent>((event, emit) async {
@@ -48,6 +51,11 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           emit(NotificationFailed(error.toString()));
         }
       }
+    });
+
+    on<FetchUnreadNotificationsCountEvent>((event, emit) async {
+      final count = await fetchUnreadNotificationsUseCase();
+      emit(UnreadNotificationsCountFetched(count));
     });
   }
 }

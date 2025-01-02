@@ -7,6 +7,8 @@ import 'package:letaskono_flutter/core/utils/CustomTextField.dart';
 import '../bloc/auth_bloc.dart';
 
 class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
+
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
@@ -46,7 +48,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   void _sendOrResendEmail() {
     if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter a valid email address.")),
+        const SnackBar(content: Text("من فضلك أدخل بريد إلكتروني صحيح")),
       );
       return;
     }
@@ -55,7 +57,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       _email = _emailController.text;
       _isFirstTime = false;
     });
-    BlocProvider.of<AuthBloc>(context).add(PasswordResetEvent(_email));
+    BlocProvider.of<AuthBloc>(context)
+        .add(PasswordResetEvent(_email.toLowerCase()));
 
     _startTimer();
   }
@@ -63,7 +66,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   void _changPassword() {
     if (_codeController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter a code and new password.")),
+        const SnackBar(content: Text("من فضلك أدخل الكود وكلمة السر الجديدة")),
       );
       return;
     }
@@ -103,11 +106,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           listener: (context, state) {
             if (state is AuthPasswordResetEmailSent) {
               setState(() {
-                // _isEmailSubmitted = true;
+                _isEmailSubmitted = true;
               });
             } else if (state is AuthPasswordVerified) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Password reset successful!")),
+                const SnackBar(content: Text("تم تعيين كلمة سر جديدة بنجاح")),
               );
               Navigator.pushReplacementNamed(context, '/signin');
             }
@@ -149,7 +152,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomButton(
                       text: _isButtonDisabled
                           ? "إرسال مجددا بعد $_counter ثانية"
@@ -162,7 +165,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       onPressed: _isButtonDisabled ? null : _sendOrResendEmail,
                       textColor: Colors.white,
                     ),
-
                   ],
                 )
               else
@@ -170,35 +172,35 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "A reset code was sent to your email: $_email",
-                      style: TextStyle(fontSize: 16, color: Colors.green),
+                      "تم إرسال كود استعادة كلمة السر إلى $_email",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
-                    SizedBox(height: 20),
-                    TextField(
+                    const SizedBox(height: 16),
+                    CustomTextField(
                       controller: _codeController,
-                      decoration: InputDecoration(
-                        labelText: "Enter Code",
-                        border: OutlineInputBorder(),
-                      ),
                       keyboardType: TextInputType.number,
+                      hintText: 'كود الاستعادة',
                     ),
-                    SizedBox(height: 20),
-                    TextField(
+                    const SizedBox(height: 16),
+                    CustomTextField(
                       controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: "New Password",
-                        border: OutlineInputBorder(),
-                      ),
+                      keyboardType: TextInputType.text,
+                      hintText: "كلمة السر الجديدة",
                       obscureText: true,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _changPassword,
-                      child: Text("Reset Password"),
+                      child: const Text("إعادة تعيين كلمة السر"),
                     ),
                     TextButton(
                       onPressed: _reEnterEmail,
-                      child: Text("Re-enter Email"),
+                      child: const Text(
+                        "أو يمكنك تعديل البريد الالكتروني",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),

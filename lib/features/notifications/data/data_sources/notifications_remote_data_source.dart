@@ -6,6 +6,8 @@ import '../models/notification.dart';
 
 abstract class NotificationRemoteDataSource {
   Future<List<Notification>> fetchNotifications({int page = 1});
+
+  Future<int> fetchUnreadNotificationsCount();
 }
 
 class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
@@ -33,6 +35,27 @@ class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         return [];
+      }
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<int> fetchUnreadNotificationsCount() async {
+    String? token = prefs.getString('auth_token');
+    try {
+      // Append the page parameter to the URL
+      final response = await httpClient.get(
+        'api/v1/notifications/notifications/unread-count/',
+        headers: {
+          "Authorization": "Token ${token}",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data['unread_count'];
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return 0;
       }
       throw Exception(e);
     }

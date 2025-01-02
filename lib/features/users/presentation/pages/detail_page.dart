@@ -3,16 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:letaskono_flutter/core/utils/ExpandingCircleProgress.dart';
-import 'package:letaskono_flutter/core/utils/confirmation_dialog.dart';
-import 'package:letaskono_flutter/features/chat/presentation/pages/chat_page.dart';
 import 'package:letaskono_flutter/features/users/data/models/AcceptanceRequest.dart';
 
 import '../bloc/action_btn_bloc.dart';
 import '../bloc/user_bloc.dart';
-import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEntity.dart';
 
 import '../widgets/CircularImageWithBorder.dart';
 import '../../../../core/utils/CustomDialog.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class DetailPage extends StatelessWidget {
   final String? userId; // Nullable to handle edge cases
@@ -100,6 +98,9 @@ class DetailPage extends StatelessWidget {
                       );
                     } else if (state is RequestAcceptedSuccess) {
                       detailsState.user.validRequest?.status = "ACCEPTED";
+                      context
+                          .read<UserBloc>()
+                          .add(FetchUserDetailsEvent(userId!));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.result)),
                       );
@@ -115,14 +116,14 @@ class DetailPage extends StatelessWidget {
                       return ExpandingCircleProgress();
                     }
                     final requestStatus = userDetails.validRequest?.status;
-                    int? senderUserId, receiverUserId;
+                    int? receiverId, senderId;
                     if (userDetails.pkid.toString() ==
                         userDetails.validRequest?.senderPkid.toString()) {
-                      senderUserId = userDetails.validRequest?.senderPkid;
-                      receiverUserId = userDetails.validRequest?.receiverPkid;
+                      receiverId = userDetails.validRequest?.senderPkid;
+                      senderId = userDetails.validRequest?.receiverPkid;
                     } else {
-                      senderUserId = userDetails.validRequest?.receiverPkid;
-                      receiverUserId = userDetails.validRequest?.senderPkid;
+                      receiverId = userDetails.validRequest?.receiverPkid;
+                      senderId = userDetails.validRequest?.senderPkid;
                     }
                     Widget mainActionBtn = Transform.scale(
                       scale: 1.0,
@@ -310,39 +311,108 @@ class DetailPage extends StatelessWidget {
                         );
                       }
                     } else if (requestStatus == "ACCEPTED") {
-                      mainActionBtn = Transform.scale(
-                        scale: 1.0,
-                        child: FloatingActionButton(
-                          heroTag: 'chat',
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/chat', arguments: {
-                              'currentMessageCount': userDetails
-                                  .validRequest
-                                  ?.chatRoom
-                                  ?.currentUserMessageCount,
-                              'roomId': userDetails.validRequest?.chatRoom?.id,
-                              'senderId': senderUserId,
-                              'receiverId': receiverUserId,
-                            });
-                          },
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50.0),
+                      if (userDetails.validRequest?.chatRoom?.state
+                              .toLowerCase() ==
+                          "open") {
+                        mainActionBtn = Transform.scale(
+                          scale: 1.0,
+                          child: FloatingActionButton(
+                            heroTag: 'chat',
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/chat', arguments: {
+                                'currentMessageCount': userDetails.validRequest
+                                    ?.chatRoom?.currentUserMessageCount,
+                                'roomId':
+                                    userDetails.validRequest?.chatRoom?.id,
+                                'currentUserState': userDetails
+                                    .validRequest?.chatRoom?.currentUserState,
+                                'otherUserState': userDetails
+                                    .validRequest?.chatRoom?.otherUserState,
+                                'senderId': senderId,
+                                'receiverId': receiverId,
+                              });
+                            },
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.chat_bubble_outline,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ],
+                            ),
                           ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.chat_bubble_outline,
-                                color: Colors.white,
-                                size: 25,
-                              ),
-                            ],
+                        );
+                      } else if (userDetails.validRequest?.chatRoom?.state
+                              .toLowerCase() ==
+                          "closed") {
+                        mainActionBtn = Transform.scale(
+                          scale: 1.0,
+                          child: FloatingActionButton(
+                            heroTag: 'no_more',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('لقد تم الرفض بينكما مسبقا')));
+                            },
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.no_accounts_outlined,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else if (userDetails.validRequest?.chatRoom?.state
+                              .toLowerCase() ==
+                          "khetba") {
+                        mainActionBtn = Transform.scale(
+                          scale: 1.0,
+                          child: FloatingActionButton(
+                            heroTag: 'khetba',
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, "/khetba", arguments: {
+                                "roomId": userDetails.validRequest?.chatRoom?.id
+                              });
+                            },
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.favorite_outline,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
                     }
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -557,74 +627,6 @@ class DetailPage extends StatelessWidget {
                         ),
                       ],
                     );
-                    // return Container(
-                    //   width: screenWidth,
-                    //   child: Column(
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     crossAxisAlignment: CrossAxisAlignment.center,
-                    //     children: [
-                    //       Directionality(
-                    //         textDirection: TextDirection.ltr,
-                    //         child: SpeedDial(
-                    //           visible: true,
-                    //           tooltip: 'خيارات',child: Text('sad'),
-                    //           spacing: 1,
-                    //           spaceBetweenChildren: 0,
-                    //           childPadding: EdgeInsets.zero,
-                    //           childMargin: EdgeInsets.zero,
-                    //           label: Text('خيارات'),
-                    //           direction: SpeedDialDirection.up,
-                    //           animatedIcon: AnimatedIcons.menu_close,
-                    //           overlayColor: Theme.of(context).colorScheme.primary,
-                    //           overlayOpacity: 0.5,
-                    //           switchLabelPosition: false,
-                    //           backgroundColor: Theme.of(context).colorScheme.primary,
-                    //           foregroundColor: Colors.white,
-                    //           children: [
-                    //             buildRequestsButton(detailsState.user, context),
-                    //             SpeedDialChild(
-                    //               child: Icon(
-                    //                 userDetails.isUserInFollowingList!
-                    //                     ? Icons.favorite
-                    //                     : Icons.favorite_outline,
-                    //                 color: Colors.white,
-                    //               ),
-                    //               label: userDetails.isUserInFollowingList!
-                    //                   ? 'إزالة من المحفوظات'
-                    //                   : 'حفظ الاستمارة',
-                    //               backgroundColor: Colors.lightBlue,
-                    //               onTap: () => {
-                    //                 userDetails.isUserInFollowingList!
-                    //                     ? BlocProvider.of<ActionBtnBloc>(context).add(
-                    //                         RemoveFromFavouritesEvent(
-                    //                             userDetails.code!))
-                    //                     : BlocProvider.of<ActionBtnBloc>(context).add(
-                    //                         AddToFavouritesEvent(userDetails.code!))
-                    //               },
-                    //             ),
-                    //             SpeedDialChild(
-                    //               child: Icon(
-                    //                 userDetails.isUserInBlackList!
-                    //                     ? Icons.block_outlined
-                    //                     : Icons.no_accounts,
-                    //                 color: Colors.white,
-                    //               ),
-                    //               label: userDetails.isUserInBlackList!
-                    //                   ? 'إزالة الحظر'
-                    //                   : "حظر الاستمارة",
-                    //               backgroundColor: Colors.lightBlue,
-                    //               onTap: () => userDetails.isUserInBlackList!
-                    //                   ? BlocProvider.of<ActionBtnBloc>(context).add(
-                    //                       RemoveFromBlackListEvent(userDetails.code!))
-                    //                   : BlocProvider.of<ActionBtnBloc>(context)
-                    //                       .add(AddToBlackListEvent(userDetails.code!)),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // );
                   },
                 ),
                 body: NestedScrollView(
@@ -645,7 +647,8 @@ class DetailPage extends StatelessWidget {
                             ? []
                             : [
                                 Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 16),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
@@ -697,7 +700,8 @@ class DetailPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(28),
                                     // Rounded corners
                                     border: Border.all(
-                                      color: Color(0xFFF8E7F6), // Border color
+                                      color: const Color(
+                                          0xFFF8E7F6), // Border color
                                       width: 1, // Border thickness
                                     ),
                                   ),
@@ -771,13 +775,39 @@ class DetailPage extends StatelessWidget {
                             padding: EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  "معلومات عامة",
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "معلومات عامة",
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    if(userDetails.isOnline != true)
+                                      Column(
+                                      children: [
+                                        Text(
+                                          'اخر ظهور',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .copyWith(fontSize: 12),
+                                        ),
+                                        Text(
+                                          timeago.format(userDetails.lastSeen!,
+                                              locale: 'ar'),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .copyWith(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                                 Divider(
                                   color:
@@ -1149,14 +1179,14 @@ class DetailPage extends StatelessWidget {
                                         children: [
                                           const SizedBox(height: 16),
                                           Text(
-                                            "ما هي هواياتك ؟",
+                                            "كيف تقضي وقتك أو ما هي هواياتك ؟",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            "السباحة والنسوان",
+                                            userDetails.hobbies ?? '',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodySmall,
@@ -1185,6 +1215,28 @@ class DetailPage extends StatelessWidget {
                                           ),
                                         ],
                                       )
+                                    : const SizedBox.shrink(),
+                                userDetails.disabilities != null
+                                    ? Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      "هل تعاني من أي أمراض أو إعاقات ؟",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "${userDetails.disabilities}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall,
+                                    ),
+                                  ],
+                                )
                                     : const SizedBox.shrink(),
                                 const SizedBox(height: 16),
                                 const Text(

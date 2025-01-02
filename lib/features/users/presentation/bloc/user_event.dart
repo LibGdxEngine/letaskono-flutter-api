@@ -59,6 +59,14 @@ class FetchUserDetailsEvent extends UsersEvent {
   FetchUserDetailsEvent(this.userId);
 }
 
+class FetchCurrentUserEvent extends UsersEvent {}
+
+class UpdateUserProfile extends UsersEvent {
+  final ProfileChangeEntity pce;
+
+  UpdateUserProfile(this.pce);
+}
+
 class SetOnlineEvent extends UsersEvent {}
 
 class SetOfflineEvent extends UsersEvent {}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,11 +7,15 @@ import 'package:letaskono_flutter/app/bloc_observer.dart';
 import 'package:letaskono_flutter/app/router.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart' as di;
 import 'package:letaskono_flutter/features/auth/presentation/bloc/auth_bloc.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
   Bloc.observer = AppBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
+  timeago.setLocaleMessages('ar', timeago.ArMessages());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // Force portrait mode
+  ]);
   await di.init(); // Initialize Dependency Injection
   runApp(const IslamicDatingApp());
 }
@@ -52,6 +57,10 @@ class IslamicDatingApp extends StatelessWidget {
               ),
             ),
             appBarTheme: const AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: color7895B2,
+                statusBarIconBrightness: Brightness.light
+              ),
               elevation: 0,
               surfaceTintColor: colorF5EFE6,
               iconTheme: IconThemeData(
@@ -99,6 +108,7 @@ class IslamicDatingApp extends StatelessWidget {
               bodySmall: TextStyle(
                   fontSize: 14, // Increased for better readability
                   color: color7895B2,
+                  letterSpacing: 0,
                   fontFamily: 'NotoKufiArabic'),
               bodyMedium: TextStyle(
                   fontSize: 16,

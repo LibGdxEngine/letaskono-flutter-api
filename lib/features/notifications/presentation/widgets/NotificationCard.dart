@@ -67,7 +67,7 @@ class NotificationCard extends StatelessWidget {
             const SizedBox(height: 16),
             Divider(
               height: 1,
-              color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
             )
           ],
         ),

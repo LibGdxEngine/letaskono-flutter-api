@@ -177,11 +177,8 @@ class _ChatPageState extends State<ChatPage> {
           if (state.maleState == "accept" && state.femaleState == "accept") {
             _chatBloc.add(EnterKhetbaPage(widget.roomId!));
           }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  state.maleState == "reject" || state.femaleState == "reject"
-                      ? 'تم الرفض'
-                      : 'تم إرسال الطلب')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('تم الإرسال')));
         } else if (state is KhetbaStageEntered) {
         } else if (state is ChatRoomsError) {
           ScaffoldMessenger.of(context)
@@ -214,9 +211,6 @@ class _ChatPageState extends State<ChatPage> {
                   child: AcceptRejectToggle(
                     onChange: (isAccepted) {
                       if (isAccepted == true) {
-                        // if(parseUserState(widget.currentUserState)!) {
-                        //   return;
-                        // }
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -393,7 +387,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    _chatBloc.add(DisconnectWebSocket());
+    // _chatBloc.add(DisconnectWebSocket());
     super.dispose();
   }
 }

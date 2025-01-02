@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:letaskono_flutter/core/utils/CustomButton.dart';
 import 'package:letaskono_flutter/core/utils/CustomTextField.dart';
 import 'package:letaskono_flutter/core/utils/ExpandingCircleProgress.dart';
+import 'package:letaskono_flutter/core/utils/SecureStorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../bloc/auth_bloc.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -14,27 +17,38 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController firstNameController =
-      TextEditingController(text: "ahmed");
+      TextEditingController(text: "");
 
   final TextEditingController lastNameController =
-      TextEditingController(text: "fathy zain");
+      TextEditingController(text: "");
 
-  final TextEditingController emailController =
-      TextEditingController(text: "ahmedr@gmail.com");
+  final TextEditingController emailController = TextEditingController(text: "");
 
   final TextEditingController passwordController =
-      TextEditingController(text: "ahmed1998");
-
+      TextEditingController(text: "");
+  final TextEditingController passwordController2 =
+      TextEditingController(text: "");
   bool _obscureText = true;
+  final _prefs = GetIt.instance<SharedPreferences>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           // Handle success and failure states
           switch (state) {
             case AuthConfirmationCodeSent():
+              final key1AlreadyExist = _prefs.getString("auth_key_1") != null;
+              if (!key1AlreadyExist) {
+                final key1 = SecureStorage.encryptText(
+                    emailController.text.toLowerCase().trim());
+                final key2 =
+                    SecureStorage.encryptText(passwordController.text.trim());
+                await _prefs.setString('auth_key_1', key1);
+                await _prefs.setString('auth_key_2', key2);
+              }
+
               Navigator.pushNamed(context, '/confirm', arguments: {
                 'email': emailController.text,
                 'password': passwordController.text,
@@ -58,7 +72,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding:const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                     child: Image.asset(
                       'assets/images/3demail_icon.png',
                       width: 100,
@@ -69,7 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       CustomTextField(
                         controller: firstNameController,
-                        hintText: 'الاسم الأول',
+                        hintText: 'الاسم الأول (عربي)',
                         keyboardType: TextInputType.name,
                         prefixIcon: Image.asset(
                           'assets/images/profile_icon.png',
@@ -83,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       CustomTextField(
                         controller: lastNameController,
-                        hintText: 'اسم الوالد والجد',
+                        hintText: 'اسم الوالد والجد (عربي)',
                         keyboardType: TextInputType.name,
                         prefixIcon: Image.asset(
                           'assets/images/parents_names.png',
@@ -140,6 +155,37 @@ class _SignUpPageState extends State<SignUpPage> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      CustomTextField(
+                        controller: passwordController2,
+                        hintText: 'تأكيد كلمة السر',
+                        obscureText: _obscureText,
+                        keyboardType: TextInputType.visiblePassword,
+                        prefixIcon: Image.asset(
+                          'assets/images/shield_icon.png',
+                          width: 1,
+                          height: 1,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Image.asset(
+                            _obscureText
+                                ? 'assets/images/visibility_off.png' // Eye icon for hidden password
+                                : 'assets/images/visibility_on.png',
+                            // Eye icon for visible password
+                            // Eye icon for visibility toggle
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () {
+                            // Toggle visibility logic here
+                            setState(() {
+                              _obscureText =
+                                  !_obscureText; // Toggle the visibility
+                            });
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
@@ -152,6 +198,21 @@ class _SignUpPageState extends State<SignUpPage> {
                             icon: 'assets/images/signup_icon.png',
                             iconBackgroundColor: Colors.white,
                             onPressed: () {
+                              if (passwordController.text.trim() !=
+                                  passwordController2.text.trim()) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('كلمتا السر غير متطابقتين')));
+                                return;
+                              }
+                              if (passwordController.text.trim().length >= 50) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'كلمة السر طويلة جدا, قصرها')));
+                                return;
+                              }
                               // Dispatch the sign-up event with user input data
                               BlocProvider.of<AuthBloc>(context).add(
                                 SignUpEvent(

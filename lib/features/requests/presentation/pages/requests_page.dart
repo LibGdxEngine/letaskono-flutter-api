@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:letaskono_flutter/core/utils/ExpandingCircleProgress.dart';
 
+import '../../data/models/request_type.dart';
 import '../bloc/request_bloc.dart';
 import '../widgets/AcceptanceRequestCard.dart';
 
@@ -16,13 +18,15 @@ class RequestsList extends StatelessWidget {
           child: BlocBuilder<RequestBloc, RequestState>(
             builder: (context, state) {
               if (state is RequestsLoading) {
-                return Center(child: CircularProgressIndicator());
+                return Center(child: ExpandingCircleProgress());
               } else if (state is RequestsError) {
                 return Center(child: Text(state.error));
               } else if (state is RequestsLoaded) {
                 return RefreshIndicator(
                   onRefresh: () async {
-                    context.read<RequestBloc>().add(FetchRequestsEvent(isRefreshing: true));
+                    // context
+                    //     .read<RequestBloc>()
+                    //     .add(FetchRequestsEvent(page: 1, isRefreshing: true));
                   },
                   child: state.requests.isNotEmpty
                       ? ListView.builder(
@@ -34,7 +38,11 @@ class RequestsList extends StatelessWidget {
                               onAccept: () => Navigator.pushNamed(
                                 context,
                                 '/userDetail',
-                                arguments: request.sender, // Pass the 'id' as an argument
+                                arguments: request.requestType ==
+                                        RequestType.sent
+                                    ? request.sender
+                                    : request
+                                        .receiver, // Pass the 'id' as an argument
                               ),
                               onReject: () => print('Reject clicked'),
                             );
@@ -45,7 +53,7 @@ class RequestsList extends StatelessWidget {
               } else if (state is RequestsError) {
                 return Center(child: Text('Error: ${state.error}'));
               } else {
-                return const Center(child: Text('...'));
+                return Center(child: ExpandingCircleProgress());
               }
             },
           ),

@@ -4,6 +4,7 @@ class UserEntity {
   final int age;
   final int height;
   final int weight;
+  final bool isOnline;
   final String country;
   final String state;
   final String nationality;
@@ -20,6 +21,7 @@ class UserEntity {
     required this.id,
     required this.code,
     required this.age,
+    required this.isOnline,
     required this.height,
     required this.weight,
     required this.country,
@@ -40,6 +42,7 @@ class UserEntity {
     return UserEntity(
       id: json['id'] as String,
       code: json['code'] as String,
+      isOnline: json['is_online'] as bool,
       profession: json['profession'] as String,
       educationLevel: json['education_level'] as String,
       maritalStatus: json['marital_status'] as String,
@@ -66,6 +69,7 @@ class UserEntity {
       'profession': profession,
       'age': age,
       'height': height,
+      'is_online': isOnline,
       'weight': weight,
       'country': country,
       'marital_status': maritalStatus,

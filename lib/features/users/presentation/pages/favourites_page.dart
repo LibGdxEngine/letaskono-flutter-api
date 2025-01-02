@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:letaskono_flutter/features/users/presentation/widgets/UsersList.dart';
 
 import '../bloc/user_bloc.dart';
-import '../widgets/UserCard.dart';
 
 class FavouritesList extends StatelessWidget {
   const FavouritesList({super.key});
@@ -56,7 +55,6 @@ class NewWidget extends StatelessWidget {
                                 user.code, // Pass the 'id' as an argument
                           );
                         },
-                        child: UserCard(user: user),
                       );
                     },
                   )

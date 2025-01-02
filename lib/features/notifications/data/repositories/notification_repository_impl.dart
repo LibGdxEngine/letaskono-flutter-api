@@ -27,4 +27,10 @@ class NotificationRepositoryImpl extends NotificationRepository {
       messageAction: notification.messageAction,
     );
   }
+
+  @override
+  Future<int> fetchUnreadNotificationsCount() async{
+    final count = await remoteDataSource.fetchUnreadNotificationsCount();
+    return count;
+  }
 }

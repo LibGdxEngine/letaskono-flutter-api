@@ -45,6 +45,22 @@ class UsersError extends UserState {
   List<Object?> get props => [error];
 }
 
+
+
+class UserUpdatedSuccess extends UserState {
+  @override
+  List<Object?> get props => [];
+}
+
+class UserUpdatedFailed extends UserState {
+  final String error;
+
+  UserUpdatedFailed(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}
+
 class OnlineStateUpdated extends UserState {
   final bool isOnline;
 

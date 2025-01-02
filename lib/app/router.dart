@@ -13,58 +13,76 @@ import 'package:letaskono_flutter/features/chat/presentation/pages/khetba_main.d
 import 'package:letaskono_flutter/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:letaskono_flutter/features/splash_page.dart';
 import 'package:letaskono_flutter/features/main_page.dart';
+import 'package:letaskono_flutter/features/users/presentation/pages/edit_info_page.dart';
 
 import '../features/users/presentation/pages/detail_page.dart';
 
 class AppRouter {
+  static Route<dynamic> _createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide in from the right
+        const end = Offset.zero;
+        const curve = Curves.ease;
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const WelcomePage());
+        return _createRoute(const WelcomePage());
       case '/confirm':
         final args = settings.arguments as Map<String, String>;
-        return MaterialPageRoute(
-          builder: (context) => ConfirmCodePage(
-            email: args['email'] ?? '',
-            password: args['password'] ?? '',
-          ),
-        );
+        return _createRoute(ConfirmCodePage(
+          email: args['email'] ?? '',
+          password: args['password'] ?? '',
+        ));
       case '/chat_list':
-        return MaterialPageRoute(builder: (context) => const ChatListMain());
+        return _createRoute(const ChatListMain());
+      case '/edit_info':
+        return _createRoute(const EditInfoPage());
       case '/chat':
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-            builder: (context) => ChatMain(
-                  currentUserState: args["currentUserState"] as String?,
-                  otherUserState: args["otherUserState"] as String?,
-                  currentMessageCount: args["currentMessageCount"] as int?,
-                  roomId: args["roomId"] as int?,
-                  senderId: args['senderId'] as int?,
-                  receiverId: args['receiverId'] as int?,
-                ));
+        return _createRoute(ChatMain(
+          currentUserState: args["currentUserState"] as String?,
+          otherUserState: args["otherUserState"] as String?,
+          currentMessageCount: args["currentMessageCount"] as int?,
+          roomId: args["roomId"] as int?,
+          senderId: args['senderId'] as int?,
+          receiverId: args['receiverId'] as int?,
+        ));
       case '/khetba':
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-            builder: (context) => KhetpaMain(roomId: args["roomId"] as int?));
+        return _createRoute(KhetpaMain(roomId: args["roomId"] as int?));
       case '/profileSetup':
-        return MaterialPageRoute(builder: (_) => const ProfileSetupPage());
+        return _createRoute(const ProfileSetupPage());
       case '/notifications':
-        return MaterialPageRoute(builder: (_) => const NotificationsPage());
+        return _createRoute(const NotificationsPage());
       case '/signin':
-        return MaterialPageRoute(builder: (_) => const SignInPage());
+        return _createRoute(const SignInPage());
       case '/resetPassword':
-        return MaterialPageRoute(builder: (_) => ResetPasswordPage());
+        return _createRoute(ResetPasswordPage());
       case '/signup':
-        return MaterialPageRoute(builder: (_) => SignUpPage());
+        return _createRoute(SignUpPage());
       case '/users':
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return _createRoute(const HomePage());
       case '/userDetail':
         final String? userId = settings.arguments as String?;
-        return MaterialPageRoute(
-          builder: (_) => DetailPage(userId: userId),
-        );
+        return _createRoute(DetailPage(userId: userId));
       default:
-        return MaterialPageRoute(builder: (_) => const SplashPage());
+        return _createRoute(const SplashPage());
     }
   }
 }

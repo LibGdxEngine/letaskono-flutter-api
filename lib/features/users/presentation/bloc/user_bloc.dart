@@ -6,12 +6,16 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/UserDetailsEntity.dart';
+import 'package:letaskono_flutter/features/users/domain/entities/UserModifyEntity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/search_entity.dart';
 import 'package:letaskono_flutter/features/users/domain/entities/user_entity.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/modify_user.dart';
+import 'package:letaskono_flutter/features/auth/domain/use_cases/resend_activation_code.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/set_offline.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/set_online.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../domain/use_cases/fetch_current_user.dart';
 import '../../domain/use_cases/fetch_favourites.dart';
 import '../../domain/use_cases/fetch_user_details.dart';
 import '../../domain/use_cases/fetch_users.dart';
@@ -23,6 +27,8 @@ part 'user_state.dart';
 
 class UserBloc extends Bloc<UsersEvent, UserState> {
   final FetchUsers fetchUsersUseCase = sl<FetchUsers>();
+  final FetchCurrentUser fetchCurrentUserUseCase = sl<FetchCurrentUser>();
+  final ModifyUser modifyUserProfileUseCase = sl<ModifyUser>();
   final FetchFavourites fetchFavouritesUseCase = sl<FetchFavourites>();
   final FetchUserDetails fetchUserDetailsUseCase = sl<FetchUserDetails>();
   final SendRequest sendRequestUseCase = sl<SendRequest>();
@@ -31,6 +37,31 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
   final prefs = sl<SharedPreferences>();
 
   UserBloc() : super(UsersInitial()) {
+
+
+
+    on<UpdateUserProfile>((event, emit) async {
+      emit(UserLoading());
+      UserDetailsEntity? user;
+      try {
+        user = await modifyUserProfileUseCase(event.pce);
+        emit(UserUpdatedSuccess());
+      } catch (error) {
+        emit(UserUpdatedFailed(error.toString()));
+      }
+    });
+
+    on<FetchCurrentUserEvent>((event, emit) async {
+      emit(UserLoading());
+      UserDetailsEntity? user;
+      try {
+        user = await fetchCurrentUserUseCase();
+        emit(UserDetailsLoaded(user));
+      } catch (error) {
+        emit(UsersError(error.toString()));
+      }
+    });
+
     on<FetchUsersEvent>((event, emit) async {
       final currentState = state;
       final searchObject = await _getUserPreferences();
@@ -167,7 +198,6 @@ class UserBloc extends Bloc<UsersEvent, UserState> {
       try {
         final filteredUsers =
             await fetchUsersUseCase(page: 1, query: searchObject);
-        print(searchObject);
         emit(
             UsersLoaded(List.from(filteredUsers), 1, filteredUsers.isNotEmpty));
       } catch (error) {

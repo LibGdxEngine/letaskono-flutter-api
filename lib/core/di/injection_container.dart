@@ -19,6 +19,7 @@ import 'package:letaskono_flutter/features/notifications/data/data_sources/notif
 import 'package:letaskono_flutter/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:letaskono_flutter/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:letaskono_flutter/features/notifications/domain/use_cases/fetch_notifications.dart';
+import 'package:letaskono_flutter/features/notifications/domain/use_cases/fetch_notifications_count.dart';
 import 'package:letaskono_flutter/features/requests/data/data_sources/requests_remote_data_source.dart';
 import 'package:letaskono_flutter/features/requests/data/repositories/request_repository_impl.dart';
 import 'package:letaskono_flutter/features/requests/domain/repositories/request_repository.dart';
@@ -29,13 +30,16 @@ import 'package:letaskono_flutter/features/users/domain/repositories/user_reposi
 import 'package:letaskono_flutter/features/users/domain/use_cases/accept_request.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/add_to_favourites.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_current_user.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_favourites.dart';
 
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_user_details.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/fetch_users.dart';
+import 'package:letaskono_flutter/features/users/domain/use_cases/modify_user.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/reject_request.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_blacklist.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/remove_from_favourites.dart';
+import 'package:letaskono_flutter/features/auth/domain/use_cases/resend_activation_code.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/send_request.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/set_offline.dart';
 import 'package:letaskono_flutter/features/users/domain/use_cases/set_online.dart';
@@ -140,6 +144,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchKhetbaRoomDetails(sl()));
   sl.registerLazySingleton(() => SetOnline(sl()));
   sl.registerLazySingleton(() => SetOffline(sl()));
+  sl.registerLazySingleton(() => FetchUnreadNotificationsCount(sl()));
+  sl.registerLazySingleton(() => FetchCurrentUser(sl()));
+  sl.registerLazySingleton(() => ModifyUser(sl()));
+  sl.registerLazySingleton(() => ResendActivationCode(sl()));
 
   // Register Bloc
   sl.registerFactory(() => AuthBloc());

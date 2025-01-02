@@ -8,6 +8,7 @@ import 'package:letaskono_flutter/features/auth/data/errors/SignUpException.dart
 import 'package:letaskono_flutter/features/auth/domain/entities/ProfileSetupEntity.dart';
 import '../../domain/use_cases/password_reset.dart';
 import '../../domain/use_cases/password_verify.dart';
+import '../../domain/use_cases/resend_activation_code.dart';
 import '../../domain/use_cases/sign_in.dart';
 import '../../domain/use_cases/sign_up.dart';
 import '../../domain/use_cases/confirm_account.dart';
@@ -26,8 +27,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CompleteProfile submitProfileUseCase = sl<CompleteProfile>();
   final PasswordReset passwordResetUseCase = sl<PasswordReset>();
   final PasswordVerify passwordVerifyUseCase = sl<PasswordVerify>();
+  final ResendActivationCode resendActivationCodeUseCase = sl<ResendActivationCode>();
 
   AuthBloc() : super(AuthInitial()) {
+
+    on<ResendActivationCodeEvent>((event, emit) async {
+      emit(AuthLoading());
+      try{
+        final response = await resendActivationCodeUseCase(event.email);
+        emit(ActivationEmailResent());
+      }catch (error){
+        emit(ResendingActivationFailed(error.toString()));
+      }
+    });
+
     on<SignUpEvent>((event, emit) async {
       emit(AuthLoading()); // Emit loading state
       try {
@@ -38,9 +51,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (error.isEmailConfirmed) {
           emit(AuthFailure(
               error.toString())); // Emit failure state with error message
-        } else {
+        } else if(error.isEmailConfirmed == false) {
           emit(
               AuthConfirmationCodeSent()); // go to confirmation code sent state
+        }else{
+          emit(AuthFailure(error.message));
         }
       } on Exception catch (error) {
         emit(AuthFailure(error.toString()));
@@ -63,6 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // Handle sign in logic
         String token = await signInUseCase.call(event.email, event.password);
         await prefs.setString('auth_token', token);
+
         emit(AuthSuccess()); // Emit success state
       } catch (error) {
         emit(AuthFailure(

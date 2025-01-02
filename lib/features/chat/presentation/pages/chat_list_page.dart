@@ -49,7 +49,7 @@ class _ChatListPageState extends State<ChatListPage> {
                     child: Text("لا توجد أي محادثات حاليا"),
                   );
           } else if (state is ChatRoomsError) {
-            return Center(child: Text('Error: ${state.error}'));
+            return Center(child: Text('هناك خطأ في استقبال البيانات !'));
           } else {
             return Center(
               child: ExpandingCircleProgress(),
