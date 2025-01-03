@@ -4,17 +4,30 @@ import 'package:letaskono_flutter/core/di/injection_container.dart';
 import 'package:letaskono_flutter/features/notifications/domain/use_cases/fetch_notifications.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../../domain/use_cases/fetch_notifications_count.dart';
-
+import 'package:letaskono_flutter/features/notifications/domain/use_cases/read_notification.dart';
 part 'notification_event.dart';
 
 part 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
+  final ReadNotification readNotificationUseCase = sl<ReadNotification>();
   final FetchNotifications fetchNotificationsUseCase = sl<FetchNotifications>();
   final FetchUnreadNotificationsCount fetchUnreadNotificationsUseCase =
       sl<FetchUnreadNotificationsCount>();
 
   NotificationBloc() : super(NotificationLoading()) {
+
+    on<ReadNotificationEvent>((event, emit)async {
+      emit(NotificationReadLoading());
+      try{
+        await readNotificationUseCase(event.id.toString());
+        emit(NotificationReadSuccess());
+      }catch (error){
+        emit(NotificationReadFailed());
+      }
+    });
+
+
     on<FetchNotificationsEvent>((event, emit) async {
       final currentState = state;
 

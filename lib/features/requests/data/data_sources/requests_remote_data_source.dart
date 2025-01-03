@@ -41,7 +41,9 @@ class RequestsRemoteDataSourceImpl extends RequestsRemoteDataSource {
       );
 
       // Combine and return the results
-      return responses.expand((list) => list).toList();
+      return responses.expand((list) => list).toList()
+        ..sort((a, b) =>
+            DateTime.parse(b.timestamp).compareTo(DateTime.parse(a.timestamp)));
     } on DioException catch (e) {
       if(e.response?.statusCode != null && e.response?.statusCode == 403){
         throw Customexception("حسابك غير مفعل بعد, انتظر تفعيله من الإدارة");

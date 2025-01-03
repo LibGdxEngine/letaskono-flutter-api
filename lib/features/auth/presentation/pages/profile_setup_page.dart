@@ -386,6 +386,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             case AuthProfileSubmitted():
               {
                 _clearFormData(); // Clear saved data after submission
+                _prefs.remove("auth_key_1");
+                _prefs.remove("auth_key_2");
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("تم استكمال بيانات الحساب")),
                 );

@@ -268,6 +268,9 @@ class _InfoEditorState extends State<InfoEditor> {
       disabilitiesController.text = user.disabilities ?? '';
       hobbiesController.text = user.hobbies ?? '';
       whoListenToController.text = user.whoDoYouListenTo ?? '';
+      _selectedFatherKnowAboutApp = user.fatherKnowAboutThisWebsite;
+      _selectedFatherAcceptMarriageWithoutQaima = user.fatherAcceptMarriageWithoutQaima;
+      _selectedYouAcceptMarriageWithoutQaima = user.youAcceptMarriageWithoutQaima;
     });
     _isInitializing = false; // Start initialization
   }

@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late UserBloc _userBloc;
   late NotificationBloc _notificationBloc;
   int _selectedIndex = 0; // State to manage selected index
+  int notificationsCount = 0;
 
   // List of screens for navigation
   final List<Widget> _screens = [
@@ -79,21 +80,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 _notificationBloc..add(FetchUnreadNotificationsCountEvent()),
             child: BlocConsumer<NotificationBloc, NotificationState>(
               listener: (context, state) {
-                if (state is UnreadNotificationsCountFetched) {}
+                if (state is UnreadNotificationsCountFetched) {
+                  setState(() {
+                    notificationsCount = state.count;
+                  });
+                }
               },
               builder: (context, state) {
-                final textCount =
-                    state is UnreadNotificationsCountFetched && state.count > 0
-                        ? Text(
-                            state.count.toString(),
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          )
-                        : null;
+                final textCount = state is UnreadNotificationsCountFetched &&
+                        notificationsCount > 0
+                    ? Text(
+                        notificationsCount.toString(),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
+                      )
+                    : null;
                 return GestureDetector(
                   onTap: () async {
                     final nextPath =
                         await Navigator.pushNamed(context, "/notifications");
+                    if (notificationsCount > 0) {
+                      setState(() {
+                        notificationsCount -= 1;
+                      });
+                    }
                     if (nextPath != null) {
                       switch (nextPath) {
                         case 'chat':
@@ -122,17 +134,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                         child: Icon((state is UnreadNotificationsCountFetched &&
                                 state.count > 0)
-                            ? Icons.notifications_active_outlined
+                            ? Icons.notifications_none_outlined
                             : Icons.notifications_none_outlined),
                       ),
                       Positioned(
                         top: 5.0, // Adjust the position of the dot
-                        right: 2.0, // Adjust the position of the dot
-                        child: Container(
+                        right: 5.0, // Adjust the position of the dot
+                        child: SizedBox(
                           // child: textCount,
-                          height: 30, // Adjust the size of the dot
-                          width: 30, // Adjust the size of the dot
-
+                          height: 35, // Adjust the size of the dot
+                          width: 35, // Adjust the size of the dot
+                          child: textCount,
                           // decoration: BoxDecoration(
                           //   border: Border.all(
                           //     color: Colors.white, // Customize the border color

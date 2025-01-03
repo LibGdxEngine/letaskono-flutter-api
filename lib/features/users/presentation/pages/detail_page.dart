@@ -56,9 +56,11 @@ class DetailPage extends StatelessWidget {
               } else if (userDetails.hijab == "منتقبة ألوان") {
                 userStyle = "assets/images/photo_of_niqab_colored_woman.png";
               } else if (userDetails.hijab == "مختمرة") {
-                userStyle = "assets/images/wphoto3.png";
+                userStyle = "assets/images/woman.png";
               } else if (userDetails.hijab == "طرح وفساتين") {
-                userStyle = "assets/images/wphoto4.png";
+                userStyle = "assets/images/woman.png";
+              } else {
+                userStyle = "assets/images/woman.png";
               }
             }
             return BlocProvider(
@@ -1324,7 +1326,37 @@ class DetailPage extends StatelessWidget {
                                   "${userDetails.relationWithFamily}",
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
-                                SizedBox(height: 80),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "هل توافقين على الزواج (الشرعي) بدون معاصي أو قائمة منقولات ؟",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  userDetails.youAcceptMarriageWithoutQaima == true ? "نعم, أوافق": "لا أقبل",
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "هل يوافق ولي أمرك على الزواج (الشرعي) ؟",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "${userDetails.fatherAcceptMarriageWithoutQaima}",
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "هل ولي أمرك على علم بتسجيلك في هذا التطبيق ؟",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "${userDetails.fatherKnowAboutThisWebsite}",
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 80),
                               ],
                             ),
                           ),

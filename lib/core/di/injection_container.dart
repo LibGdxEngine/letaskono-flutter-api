@@ -1,6 +1,7 @@
 // lib/core/di/injection_container.dart
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:letaskono_flutter/features/notifications/domain/use_cases/read_notification.dart';
 import 'package:letaskono_flutter/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:letaskono_flutter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:letaskono_flutter/features/auth/domain/use_cases/password_reset.dart';
@@ -148,7 +149,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchCurrentUser(sl()));
   sl.registerLazySingleton(() => ModifyUser(sl()));
   sl.registerLazySingleton(() => ResendActivationCode(sl()));
-
+  sl.registerLazySingleton(() => ReadNotification(sl()));
   // Register Bloc
   sl.registerFactory(() => AuthBloc());
 }

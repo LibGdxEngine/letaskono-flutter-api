@@ -243,7 +243,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
           "Content-Type": "application/json",
         },
       );
-      return response.data;
+      return response.data['status'];
     } on DioException catch (e) {
       if (e.response?.statusCode != null && e.response?.statusCode == 403) {
         throw Customexception("حسابك غير مفعل بعد, انتظر تفعيله من الإدارة");

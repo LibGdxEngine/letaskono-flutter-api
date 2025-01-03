@@ -47,6 +47,7 @@ class UserDetailsEntity {
   final bool? wantQaima;
   final String? fatherAcceptMarriageWithoutQaima;
   final String? fatherKnowAboutThisWebsite;
+  final bool? youAcceptMarriageWithoutQaima;
   final String? requestSendingStatus;
   final bool? isBlocked;
   final DateTime? blockUntil;
@@ -69,6 +70,7 @@ class UserDetailsEntity {
     this.fcmToken,
     this.gender,
     this.age,
+    this.youAcceptMarriageWithoutQaima,
     this.le7ya,
     this.nationality,
     this.country,
@@ -136,6 +138,7 @@ class UserDetailsEntity {
         fcmToken: json['fcm_token'],
         gender: json['gender'],
         age: json['age'],
+        youAcceptMarriageWithoutQaima: json['you_accept_marriage_without_qaima'],
         country: json['country'],
         state: json['state'],
         city: json['city'],
@@ -218,6 +221,7 @@ class UserDetailsEntity {
       'weight': weight,
       'disabilities': disabilities,
       'skin_color': skinColor,
+      'you_accept_marriage_without_qaima': youAcceptMarriageWithoutQaima,
       'about_me': aboutMe,
       'azkar': azkar,
       'hijab': hijab,

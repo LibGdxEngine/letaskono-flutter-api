@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hijri/hijri_calendar.dart';
 import '../../domain/entities/notification_entity.dart';
+import 'package:letaskono_flutter/features/notifications/presentation/bloc/notification_bloc.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationEntity notification;
@@ -13,6 +15,8 @@ class NotificationCard extends StatelessWidget {
     final hDate = HijriCalendar.fromDate(notification.createdAt);
     return GestureDetector(
       onTap: () {
+        BlocProvider.of<NotificationBloc>(context)
+            .add(ReadNotificationEvent(notification.id));
         switch (notification.messageAction) {
           case 'رسالة جديدة':
             Navigator.pop(context, "chat");
@@ -52,12 +56,22 @@ class NotificationCard extends StatelessWidget {
           children: [
             Text(
               notification.title,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: notification.isRead
+                  ? Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(color: const Color(0x6F22172A))
+                  : Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 4),
             Text(
               notification.message,
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: notification.isRead
+                  ? Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: const Color(0x6F22172A))
+                  : Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(

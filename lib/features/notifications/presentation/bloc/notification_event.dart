@@ -10,3 +10,7 @@ class FetchNotificationsEvent extends NotificationEvent {
 }
 
 class FetchUnreadNotificationsCountEvent extends NotificationEvent {}
+class ReadNotificationEvent extends NotificationEvent {
+  final int id;
+  ReadNotificationEvent(this.id);
+}

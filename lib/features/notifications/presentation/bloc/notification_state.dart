@@ -48,3 +48,7 @@ class UnreadNotificationsCountFetched extends NotificationState {
   @override
   List<Object> get props => [count];
 }
+
+class NotificationReadSuccess extends NotificationState {}
+class NotificationReadFailed extends NotificationState {}
+class NotificationReadLoading extends NotificationState {}

@@ -8,6 +8,8 @@ abstract class NotificationRemoteDataSource {
   Future<List<Notification>> fetchNotifications({int page = 1});
 
   Future<int> fetchUnreadNotificationsCount();
+
+  Future<void> readNotification(String id);
 }
 
 class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
@@ -57,6 +59,24 @@ class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
       if (e.response?.statusCode == 404) {
         return 0;
       }
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<void> readNotification(String id) async {
+    String? token = prefs.getString('auth_token');
+    try {
+      // Append the page parameter to the URL
+      final response = await httpClient.put(
+        'api/v1/notifications/notifications/$id/read/',
+        headers: {
+          "Authorization": "Token $token",
+          "Content-Type": "application/json",
+        },
+      );
+      return response.data['unread_count'];
+    } on DioException catch (e) {
       throw Exception(e);
     }
   }

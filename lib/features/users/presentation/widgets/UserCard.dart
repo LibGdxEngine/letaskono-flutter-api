@@ -79,9 +79,11 @@ class UserCard extends StatelessWidget {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                 margin: const EdgeInsets.symmetric(horizontal: 30),
-                decoration: const BoxDecoration(
-                  color: Color(0xffDD88CF),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: visitedBefore
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                      : const Color(0xffDD88CF),
+                  borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(16),
                       bottomRight: Radius.circular(16)),
                 ),

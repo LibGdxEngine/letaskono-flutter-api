@@ -14,6 +14,7 @@ class Profile {
   final String educationLevel;
   final String profession;
   final String? maritalStatus;
+  final bool? youAcceptMarriageWithoutQaima;
   final bool? children;
   final int? numberOfChildBoys;
   final int? numberOfChildGirls;
@@ -65,6 +66,7 @@ class Profile {
     this.createdAt,
     this.updatedAt,
     this.le7ya,
+    this.youAcceptMarriageWithoutQaima,
     this.nationality,
     this.disabilities,
     required this.country,
@@ -132,6 +134,7 @@ class Profile {
       state: json['state'],
       city: json['city'],
       nationality: json['nationality'],
+      youAcceptMarriageWithoutQaima: json['want_qaima'],
       phoneNumber: json['phone_number'],
       fathersPhone: json['fathers_phone'],
       educationLevel: json['education_level'],
@@ -205,6 +208,7 @@ class Profile {
       'number_of_child_girls': numberOfChildGirls,
       'height': height,
       'weight': weight,
+      'want_qaima': youAcceptMarriageWithoutQaima,
       'skin_color': skinColor,
       'about_me': aboutMe,
       'azkar': azkar,

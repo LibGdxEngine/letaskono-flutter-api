@@ -33,4 +33,9 @@ class NotificationRepositoryImpl extends NotificationRepository {
     final count = await remoteDataSource.fetchUnreadNotificationsCount();
     return count;
   }
+
+  @override
+  Future<void> readNotification(String id) async {
+    return await remoteDataSource.readNotification(id);
+  }
 }

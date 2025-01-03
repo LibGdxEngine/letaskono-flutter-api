@@ -40,6 +40,9 @@ class _NotificationsListState extends State<NotificationsList> {
     return Scaffold(
       appBar: AppBar(title: const Text('التنبيهات'),),
       body: BlocBuilder<NotificationBloc, NotificationState>(
+        buildWhen: (prev, current){
+          return current is NotificationLoaded;
+        },
         builder: (context, state) {
           if (state is NotificationLoading &&
               state is! NotificationLoadingMore) {
